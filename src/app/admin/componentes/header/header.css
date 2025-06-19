@@ -1,0 +1,43 @@
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.project-info {
+  display: flex;
+  align-items: center;
+}
+
+.project-image {
+  border-radius: 8px;
+  margin-right: 1rem;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: #2D8F2F;
+  font-weight: bold;
+}
+
+.admin-profile {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem;
+  color: #2D8F2F;
+  cursor: pointer;
+}
+
+.admin-profile span {
+  margin-right: 0.5rem;
+}
+
+.logout-icon {
+  cursor: pointer;
+}
+
+.logout-icon:hover {
+  opacity: 0.8;
+}

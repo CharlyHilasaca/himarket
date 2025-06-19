@@ -1,0 +1,19 @@
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.panel-layout {
+  display: flex;
+}
+
+.panel-content {
+  margin-left: 250px; /* Espacio para el sliderbar */
+  margin-top: 60px; /* Espacio para el header */
+  padding: 2rem;
+  width: calc(100% - 250px);
+  background-color: #ffffff;
+  min-height: calc(100vh - 60px);
+  box-sizing: border-box;
+}

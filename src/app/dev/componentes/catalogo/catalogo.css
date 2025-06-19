@@ -1,0 +1,26 @@
+.catalogo-lista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  justify-content: center; /* Centra horizontalmente las etiquetas */
+  align-items: stretch;    /* Hace que todas tengan la misma altura */
+}
+
+.agregar-producto-btn {
+  background-color: #0056b3;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-bottom: 18px;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #0001;
+}
+.agregar-producto-btn:hover {
+  background-color: #003d80;
+  box-shadow: 0 4px 16px #0002;
+}

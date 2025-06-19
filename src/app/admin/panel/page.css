@@ -1,0 +1,16 @@
+/* General Layout */
+.admin-panel {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+  overflow: hidden; /* Evitar que el contenido se desborde */
+}
+
+/* Main Content */
+.main-content {
+  width: 80%;
+  padding: 1rem;
+  background-color: #F4F4F4;
+  overflow: auto; /* Habilitar scroll si el contenido es más grande que el contenedor */
+  box-sizing: border-box; /* Incluir padding y bordes en el ancho total */
+}
