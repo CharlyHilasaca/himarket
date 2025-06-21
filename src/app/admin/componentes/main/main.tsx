@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Header from "../header/header";
 import Actions from "./actions/actions";
 import Tables from "./tables/tables";
+import Venta from "./venta/venta";
+import "./main.css"; // Importa el CSS aquí
 
 interface MainContentProps {
   adminName: string;
@@ -16,16 +18,27 @@ export default function MainContent({
   projectImage,
   handleLogout,
 }: MainContentProps) {
+  const [ventaOpen, setVentaOpen] = useState(false);
+
   return (
     <div className="main-content">
-      <Header
-        adminName={adminName}
-        selectedOption={selectedOption}
-        projectImage={projectImage}
-        handleLogout={handleLogout}
-      />
-      <Actions />
-      <Tables />
+      {!ventaOpen && (
+        <>
+          <Header
+            adminName={adminName}
+            selectedOption={selectedOption}
+            projectImage={projectImage}
+            handleLogout={handleLogout}
+          />
+          <Actions onVentaClick={() => setVentaOpen(true)} />
+          <Tables />
+        </>
+      )}
+      {ventaOpen && (
+        <div className="venta-overlay-full">
+          <Venta onClose={() => setVentaOpen(false)} />
+        </div>
+      )}
     </div>
   );
 }

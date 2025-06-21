@@ -3,20 +3,22 @@ import "./etiquetas.css";
 import Image from "next/image";
 import ModalAddP from "../modaladdp/modaladdp";
 
-interface Producto {
+interface ProductoResumen {
   _id: string;
   name: string;
+  marca?: string;
   image: string;
+  estado: string; // "Producto en tienda" o "Agregar a Tienda"
 }
 
 export default function Etiquetas() {
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const [productos, setProductos] = useState<ProductoResumen[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProductos = async () => {
-      const res = await fetch("/api/products", { credentials: "include" });
+      const res = await fetch("/api/productsresumen", { credentials: "include" });
       if (res.ok) {
         const data = await res.json();
         setProductos(data);
@@ -25,7 +27,8 @@ export default function Etiquetas() {
     fetchProductos();
   }, []);
 
-  const handleAgregarProducto = (id: string) => {
+  const handleAgregarProducto = (id: string, estado: string) => {
+    if (estado === "Producto en tienda") return;
     setSelectedProductId(id);
     setModalOpen(true);
   };
@@ -47,11 +50,13 @@ export default function Etiquetas() {
             height={200}
           />
           <h3>{producto.name}</h3>
+          {producto.marca && <p className="etiqueta-marca">{producto.marca}</p>}
           <button
-            className="agregar-boton"
-            onClick={() => handleAgregarProducto(producto._id)}
+            className={`agregar-boton${producto.estado === "Producto en tienda" ? " en-tienda" : ""}`}
+            onClick={() => handleAgregarProducto(producto._id, producto.estado)}
+            disabled={producto.estado === "Producto en tienda"}
           >
-            Agregar a Tienda
+            {producto.estado}
           </button>
         </div>
       ))}

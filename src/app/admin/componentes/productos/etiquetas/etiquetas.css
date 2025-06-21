@@ -10,8 +10,8 @@
 
 /* Estilo de cada etiqueta */
 .etiqueta {
-    width: 200px;
-    height: 250px;
+    width: auto;
+    height: auto;
     background-color: #fff; /* Fondo blanco */
     color: #2d8f2f; /* Texto del color del borde */
     border: 2px solid #2d8f2f; /* Borde del color de fondo anterior */
@@ -35,7 +35,7 @@
 /* Imagen dentro de la etiqueta */
 .etiqueta-imagen {
   width: 100%;
-  height: 120px;
+  height: auto;
   object-fit: cover; /* Ajustar la imagen sin distorsión */
   border-radius: 4px;
 }
@@ -54,4 +54,18 @@
 
 .agregar-boton:hover {
   background-color: #2d8f2f;
+}
+
+.agregar-boton.en-tienda {
+  background: #b3b3b3;
+  color: #fff;
+  cursor: not-allowed;
+  border: 1px solid #888;
+  font-weight: bold;
+}
+
+.etiqueta-marca {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 0.5rem;
 }

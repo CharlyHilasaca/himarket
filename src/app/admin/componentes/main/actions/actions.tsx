@@ -2,10 +2,14 @@ import React from "react";
 import './actions.css';
 import Image from 'next/image';
 
-export default function Actions() {
+interface ActionsProps {
+  onVentaClick: () => void;
+}
+
+export default function Actions({ onVentaClick }: ActionsProps) {
   return (
     <section className="actions-section">
-      <button className="action-button venta">
+      <button className="action-button venta" onClick={onVentaClick}>
         <Image  src="/ventat.png" alt="Ventas" width={50} height={50} className="sidebar-icon" />
         Hacer Venta
       </button>

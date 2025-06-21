@@ -1,0 +1,205 @@
+.venta-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+
+.venta-content {
+  background: #fff;
+  border-radius: 10px;
+  min-width: 350px;
+  max-width: 95vw;
+  min-height: 200px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+  display: flex;
+  flex-direction: column;
+}
+
+.venta-full {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.venta-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2rem 2rem 1rem 2rem;
+  border-bottom: 1px solid #eee;
+  color: black;
+}
+
+.venta-close-btn {
+  background: #2D8F2F;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.venta-close-btn:hover {
+  background: #69CD68;
+}
+
+.venta-body {
+  flex: 1;
+  padding: 2rem;
+  color: black;
+  /* Aquí puedes agregar estilos para el contenido de venta */
+}
+
+.venta-body-flex {
+  display: flex;
+  gap: 2rem;
+  height: 100%;
+}
+
+.venta-left, .venta-right {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.venta-left {
+  border: 2px solid #2d8f2f;
+  margin-right: 1rem;
+  gap: 1.5rem;
+}
+
+.venta-right {
+  border: 2px solid #0056b3;
+  margin-left: 1rem;
+  gap: 1rem;
+}
+
+.venta-cliente-form,
+.venta-cantidad {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.venta-cliente-info,
+.venta-producto-info {
+  margin-top: 0.5rem;
+  background: #f4f4f4;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+}
+
+.venta-producto select,
+.venta-producto input[type="text"] {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+  padding: 0.3rem;
+}
+
+.venta-producto-info label {
+  margin-right: 0.5rem;
+}
+
+.venta-lista-productos {
+  flex: 1 1 0;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.venta-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f4f4;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.venta-eliminar-btn {
+  background: #b30000;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.2rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+.venta-eliminar-btn:hover {
+  background: #ff3333;
+}
+
+.venta-total {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+}
+
+.venta-pagar-btn {
+  background: #2d8f2f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.7rem 2rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.venta-pagar-btn:disabled {
+  background: #b3b3b3;
+  cursor: not-allowed;
+}
+.venta-pagar-btn:hover:not(:disabled) {
+  background: #69CD68;
+}
+
+.venta-error {
+  color: #b30000;
+  margin-top: 0.5rem;
+}
+
+.venta-autocomplete {
+  position: relative;
+  width: 100%;
+}
+
+.venta-autocomplete-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-top: none;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 20;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.venta-autocomplete-item {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.venta-autocomplete-item:hover {
+  background: #f4f4f4;
+}

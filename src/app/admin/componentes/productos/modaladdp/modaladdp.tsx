@@ -26,7 +26,7 @@ export default function ModalAddP({ isOpen, onClose, productId, onSuccess }: Mod
                     const data = await res.json();
                     setUnidades(data);
                 }
-            } catch {}
+            } catch { }
         };
         fetchUnidades();
     }, [isOpen]);
@@ -54,7 +54,7 @@ export default function ModalAddP({ isOpen, onClose, productId, onSuccess }: Mod
             } else {
                 setMensaje(data.message || "Error al agregar el producto.");
             }
-        } catch (err) {
+        } catch {
             setMensaje("Error de red.");
         }
         setLoading(false);

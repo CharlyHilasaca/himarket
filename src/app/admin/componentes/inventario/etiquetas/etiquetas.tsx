@@ -1,52 +1,54 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./etiquetas.css";
 import Image from "next/image";
 
 interface Producto {
-  id: number;
-  nombre: string;
-  precio: string;
-  stock: number;
-  imagen: string;
+  _id: string;
+  name: string;
+  marca?: string;
+  image: string;
+  projectDetails?: {
+    purchasePrice: number;
+    salePrice: number;
+    stock: number;
+    unidad: string;
+  }[];
 }
 
-const productos: Producto[] = [
-  { id: 1, nombre: "Producto 1", precio: "$10", stock: 20, imagen: "producto.png" },
-  { id: 2, nombre: "Producto 2", precio: "$15", stock: 15, imagen: "producto.png" },
-  { id: 3, nombre: "Producto 3", precio: "$20", stock: 10, imagen: "producto.png" },
-  { id: 4, nombre: "Producto 4", precio: "$25", stock: 5, imagen: "producto.png" },
-  { id: 5, nombre: "Producto 5", precio: "$30", stock: 8, imagen: "producto.png" },
-  { id: 6, nombre: "Producto 6", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 7, nombre: "Producto 7", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 8, nombre: "Producto 8", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 9, nombre: "Producto 9", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 10, nombre: "Producto 10", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 11, nombre: "Producto 11", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 12, nombre: "Producto 12", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 13, nombre: "Producto 13", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 14, nombre: "Producto 14", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 15, nombre: "Producto 15", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 16, nombre: "Producto 16", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 17, nombre: "Producto 17", precio: "$35", stock: 12, imagen: "producto.png" },
-  { id: 18, nombre: "Producto 18", precio: "$35", stock: 12, imagen: "producto.png" },
-];
-
 export default function Etiquetas() {
+  const [productos, setProductos] = useState<Producto[]>([]);
+
+  useEffect(() => {
+    const fetchProductos = async () => {
+      const res = await fetch("/api/productsproyecto", { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        setProductos(data);
+      }
+    };
+    fetchProductos();
+  }, []);
+
   return (
     <div className="etiquetas-container">
       {productos.map((producto) => (
-        <div key={producto.id} className="etiqueta">
+        <div key={producto._id} className="etiqueta">
           <Image
-            src={`/${producto.imagen}`}
-            alt={producto.nombre}
+            src={`/uploads/${producto.image}`}
+            alt={producto.name}
             className="etiqueta-imagen"
             width={200}
             height={200}
           />
-
-          <h3>{producto.nombre}</h3>
-          <p>Precio: {producto.precio}</p>
-          <p>Stock: {producto.stock}</p>
+          <h3>{producto.name} {producto.marca}</h3>
+          {producto.projectDetails && producto.projectDetails.length > 0 && (
+            <div>
+              <p>Precio compra: S/ {producto.projectDetails[0].purchasePrice}</p>
+              <p>Precio venta: S/ {producto.projectDetails[0].salePrice}</p>
+              <p>Stock: {producto.projectDetails[0].stock}</p>
+              {/* Puedes mostrar la unidad si lo deseas */}
+            </div>
+          )}
         </div>
       ))}
     </div>
