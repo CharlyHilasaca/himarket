@@ -19,13 +19,13 @@ interface ProductoBajoStock {
   stockmayor?: number;
 }
 
-const masVendidos = [
-  "Producto-01",
-  "Producto-02",
-  "Producto-03",
-  "Producto-04",
-  "Producto-05",
-];
+interface ProductoMasVendido {
+  _id: string;
+  name: string;
+  marca?: string;
+  image?: string;
+  cantidadVendida: number;
+}
 
 function fillRows<T>(data: T[], min: number, max: number): (T | null)[] {
   const length = Math.max(min, Math.min(data.length, max));
@@ -35,7 +35,9 @@ function fillRows<T>(data: T[], min: number, max: number): (T | null)[] {
 export default function Tables() {
   const [historialData, setHistorialData] = useState<VentaHistorial[]>([]);
   const [bajoStock, setBajoStock] = useState<ProductoBajoStock[]>([]);
+  const [masVendidos, setMasVendidos] = useState<ProductoMasVendido[]>([]);
   const [bajoStockLoading, setBajoStockLoading] = useState(true);
+  const [masVendidosLoading, setMasVendidosLoading] = useState(true);
 
   useEffect(() => {
     const fetchVentas = async () => {
@@ -71,8 +73,26 @@ export default function Tables() {
     fetchBajoStock();
   }, []);
 
+  useEffect(() => {
+    const fetchMasVendidos = async () => {
+      setMasVendidosLoading(true);
+      try {
+        const res = await fetch('/api/productos/masvendidos', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setMasVendidos(data);
+        } else {
+          setMasVendidos([]);
+        }
+      } catch {
+        setMasVendidos([]);
+      }
+      setMasVendidosLoading(false);
+    };
+    fetchMasVendidos();
+  }, []);
+
   const historialRows = fillRows(historialData, 8, 8);
-  const masVendidosRows = fillRows(masVendidos, 5, 5);
 
   return (
     <section className="tables">
@@ -114,7 +134,7 @@ export default function Tables() {
                 <span>{item.name}{item.marca ? ` (${item.marca})` : ""} - Stock: {item.stock}</span>
                 {item.image && (
                   <Image
-                    src={`/uploads/${item.image}`}
+                    src={`/bajostock.png`}
                     alt={item.name}
                     width={30}
                     height={30}
@@ -130,17 +150,28 @@ export default function Tables() {
       {/* Tabla secundaria: Productos Más Vendidos */}
       <div className="table vendidos">
         <h3>Productos Más Vendidos</h3>
-        <ul>
-          {masVendidosRows.map((item, idx) => (
-            <li key={idx} className="stock-list-item">{item ?? ""}
-            <Image 
-              src="/masvendido.png"
-              alt={item ?? "Producto"}
-              width={24} height={24}
-              className="stock-list-img"
-            /></li>
-          ))}
-        </ul>
+        {masVendidosLoading ? (
+          <p>Cargando...</p>
+        ) : masVendidos.length === 0 ? (
+          <p>No hay productos más vendidos</p>
+        ) : (
+          <ul>
+            {masVendidos.map((item) => (
+              <li key={item._id} className="stock-list-item">
+                <span>{item.name}{item.marca ? ` (${item.marca})` : ""} - Vendidos: {item.cantidadVendida}</span>
+                {item.image && (
+                  <Image
+                    src={`/masvendido.png`}
+                    alt={item.name}
+                    width={24}
+                    height={24}
+                    className="stock-list-img"
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </section>
   );

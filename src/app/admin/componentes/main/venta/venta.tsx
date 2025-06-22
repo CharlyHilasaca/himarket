@@ -61,10 +61,6 @@ export default function Venta({ onClose }: VentaProps) {
   const [modalVentaOpen, setModalVentaOpen] = useState(false);
   const [proyectoid, setProyectoid] = useState<string>("");
 
-  // Estados adicionales para precio y cantidad editables
-  const [precioEditable, setPrecioEditable] = useState<number | null>(null);
-  const [cantidadEditable, setCantidadEditable] = useState<number | null>(null);
-
   // Estados adicionales para manejar el valor string de los inputs
   const [precioEditableStr, setPrecioEditableStr] = useState("");
   const [cantidadEditableStr, setCantidadEditableStr] = useState("");
@@ -128,13 +124,9 @@ export default function Venta({ onClose }: VentaProps) {
   // Efecto para actualizar los campos editables cuando cambia el producto seleccionado
   useEffect(() => {
     if (productoSeleccionado && productoSeleccionado.projectDetails && productoSeleccionado.projectDetails.length > 0) {
-      setPrecioEditable(productoSeleccionado.projectDetails[0].salePrice);
-      setCantidadEditable(1);
       setPrecioEditableStr(productoSeleccionado.projectDetails[0].salePrice.toString().replace(".", ","));
       setCantidadEditableStr("1");
     } else {
-      setPrecioEditable(null);
-      setCantidadEditable(null);
       setPrecioEditableStr("");
       setCantidadEditableStr("");
     }
@@ -159,23 +151,6 @@ export default function Venta({ onClose }: VentaProps) {
     return unidad ? unidad.name : unidadId;
   };
 
-  // Cambiar el estado de la unidad
-  const handleChangeUnidad = (unidadId: string) => {
-    if (!productoSeleccionado) return;
-    const unidad = unidades.find(u => u._id === unidadId);
-    if (!unidad) return;
-    setProductoSeleccionado({
-      ...productoSeleccionado,
-      projectDetails: [
-        {
-          ...productoSeleccionado.projectDetails![0],
-          unidad: unidadId,
-          salePrice: unidadId === "64a1c6f7e4b0f150f4e4b0f1" ? productoSeleccionado.projectDetails![0].salePrice * 0.85 : productoSeleccionado.projectDetails![0].salePrice / 0.85,
-        },
-      ],
-    });
-  };
-
   // Función para manejar cambios en el precio editable (string)
   const handlePrecioEditableChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!productoSeleccionado || !productoSeleccionado.projectDetails || productoSeleccionado.projectDetails.length === 0) return;
@@ -188,28 +163,25 @@ export default function Venta({ onClose }: VentaProps) {
     if (partes.length > 2) return; // Solo una coma permitida
     setPrecioEditableStr(value);
     if (value === "") {
-      setPrecioEditable(null);
+      setPrecioEditableStr("");
       if (unidadNombre === "kilogramo" || unidadNombre === "litro") {
-        setCantidadEditable(null);
         setCantidadEditableStr("");
       }
       return;
     }
     // Convertir la coma a punto para parsear
-    let nuevoPrecio = parseFloat(value.replace(",", "."));
+    const nuevoPrecio = parseFloat(value.replace(",", "."));
     if (isNaN(nuevoPrecio) || nuevoPrecio <= 0) {
-      setPrecioEditable(null);
+      setPrecioEditableStr("");
       if (unidadNombre === "kilogramo" || unidadNombre === "litro") {
-        setCantidadEditable(null);
         setCantidadEditableStr("");
       }
       return;
     }
-    setPrecioEditable(Number(nuevoPrecio.toFixed(1)));
+    setPrecioEditableStr(Number(nuevoPrecio.toFixed(1)).toString().replace(".", ","));
     if (unidadNombre === "kilogramo" || unidadNombre === "litro") {
       // cantidad = precio modificado / precio base
       const nuevaCantidad = nuevoPrecio / detalle.salePrice;
-      setCantidadEditable(Number(nuevaCantidad.toFixed(1)));
       setCantidadEditableStr(nuevaCantidad.toFixed(1).replace(".", ","));
     }
   };
@@ -226,28 +198,25 @@ export default function Venta({ onClose }: VentaProps) {
     if (partes.length > 2) return; // Solo una coma permitida
     setCantidadEditableStr(value);
     if (value === "") {
-      setCantidadEditable(null);
+      setCantidadEditableStr("");
       if (unidadNombre === "kilogramo" || unidadNombre === "litro") {
-        setPrecioEditable(null);
         setPrecioEditableStr("");
       }
       return;
     }
     // Convertir la coma a punto para parsear
-    let nuevaCantidad = parseFloat(value.replace(",", "."));
+    const nuevaCantidad = parseFloat(value.replace(",", "."));
     if (isNaN(nuevaCantidad) || nuevaCantidad <= 0) {
-      setCantidadEditable(null);
+      setCantidadEditableStr("");
       if (unidadNombre === "kilogramo" || unidadNombre === "litro") {
-        setPrecioEditable(null);
         setPrecioEditableStr("");
       }
       return;
     }
-    setCantidadEditable(Number(nuevaCantidad.toFixed(1)));
+    setCantidadEditableStr(Number(nuevaCantidad.toFixed(1)).toString().replace(".", ","));
     if (unidadNombre === "kilogramo" || unidadNombre === "litro") {
       // precio = cantidad * precio base
       const nuevoPrecio = nuevaCantidad * detalle.salePrice;
-      setPrecioEditable(Number(nuevoPrecio.toFixed(1)));
       setPrecioEditableStr(nuevoPrecio.toFixed(1).replace(".", ","));
     }
   };
@@ -297,8 +266,6 @@ export default function Venta({ onClose }: VentaProps) {
     setProductoSeleccionado(null);
     setBusqueda("");
     setCantidad(1);
-    setPrecioEditable(null);
-    setCantidadEditable(null);
     setPrecioEditableStr("");
     setCantidadEditableStr("");
   };

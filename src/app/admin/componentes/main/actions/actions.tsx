@@ -37,7 +37,7 @@ export default function Actions({ onVentaClick, onAddStockClick }: ActionsProps)
       </button>
       <button className="action-button ganancias">
         <Image  src="/gananciat.png" alt="Ganancias" width={50} height={50} className="sidebar-icon" />
-        Ganancias S/.{ganancias.toFixed(2)}
+        Ventas S/.{ganancias.toFixed(2)}
       </button>
     </section>
   );

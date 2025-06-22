@@ -95,7 +95,7 @@ export default function AddStock({ onClose }: AddStockProps) {
         const data = await res.json();
         setMensaje(data.message || "Error al actualizar el stock.");
       }
-    } catch (err) {
+    } catch {
       setMensaje("Error de red al actualizar el stock.");
     }
     setLoading(false);
