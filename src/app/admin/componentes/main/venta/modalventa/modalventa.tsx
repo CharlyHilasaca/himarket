@@ -63,11 +63,11 @@ export default function ModalVenta({
           <p><b>Total:</b> S/ {total.toFixed(2)}</p>
         </div>
         <div className="modalventa-actions">
-          <button onClick={() => onVenta({ estado: "pagado", tipoPago, nfac })}>
-            Pago Completado
-          </button>
           <button onClick={() => onVenta({ estado: "pendiente", tipoPago, nfac })}>
-            Guardar en cuenta cliente
+            Guardar como Pendiente
+          </button>
+          <button onClick={() => onVenta({ estado: "pagado", tipoPago, nfac })}>
+            Guardar como Pagado
           </button>
           <button onClick={onClose}>Cancelar</button>
         </div>

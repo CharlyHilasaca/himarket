@@ -332,9 +332,13 @@ export default function Venta({ onClose }: VentaProps) {
     tipoPago: "efectivo" | "yape";
     nfac: string;
   }) => {
-    if (!cliente || !proyectoid) return;
+    if (!proyectoid) return;
+    if (estado === "pendiente" && !cliente) {
+      alert("Debe seleccionar un cliente para guardar la venta como pendiente.");
+      return;
+    }
     const ventaBody = {
-      email: cliente.email,
+      email: cliente?.email,
       dni: dni ? Number(dni) : undefined,
       items: carrito.map((prod) => ({
         producto: prod._id,
@@ -346,7 +350,7 @@ export default function Venta({ onClose }: VentaProps) {
       tipoPago,
       nfac,
     };
-    console.log("Venta body a enviar:", ventaBody); // <-- Agrega esto
+    console.log("Venta body a enviar:", ventaBody);
 
     try {
       const res = await fetch("/api/ventas", {

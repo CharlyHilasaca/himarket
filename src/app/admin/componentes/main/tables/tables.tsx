@@ -10,13 +10,14 @@ interface VentaHistorial {
   estado?: string;
 }
 
-const bajoStock = [
-  "Producto-01",
-  "Producto-02",
-  "Producto-03",
-  "Producto-04",
-  "Producto-05",
-];
+interface ProductoBajoStock {
+  _id: string;
+  name: string;
+  marca?: string;
+  image?: string;
+  stock: number;
+  stockmayor?: number;
+}
 
 const masVendidos = [
   "Producto-01",
@@ -33,6 +34,8 @@ function fillRows<T>(data: T[], min: number, max: number): (T | null)[] {
 
 export default function Tables() {
   const [historialData, setHistorialData] = useState<VentaHistorial[]>([]);
+  const [bajoStock, setBajoStock] = useState<ProductoBajoStock[]>([]);
+  const [bajoStockLoading, setBajoStockLoading] = useState(true);
 
   useEffect(() => {
     const fetchVentas = async () => {
@@ -49,8 +52,26 @@ export default function Tables() {
     fetchVentas();
   }, []);
 
+  useEffect(() => {
+    const fetchBajoStock = async () => {
+      setBajoStockLoading(true);
+      try {
+        const res = await fetch('/api/productos/bajostock', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setBajoStock(data);
+        } else {
+          setBajoStock([]);
+        }
+      } catch {
+        setBajoStock([]);
+      }
+      setBajoStockLoading(false);
+    };
+    fetchBajoStock();
+  }, []);
+
   const historialRows = fillRows(historialData, 8, 8);
-  const bajoStockRows = fillRows(bajoStock, 5, 5);
   const masVendidosRows = fillRows(masVendidos, 5, 5);
 
   return (
@@ -80,21 +101,30 @@ export default function Tables() {
       </div>
 
       {/* Tabla secundaria: Productos de Bajo Stock */}
-      <div className="table stock">
+      <div className="table stock stock-scroll">
         <h3>Productos de Bajo Stock</h3>
-        <ul>
-          {bajoStockRows.map((item, idx) => (
-          <li key={idx} className="stock-list-item">
-            {item ?? ""}
-            <Image 
-              src="/bajostock.png"
-              alt={item ?? "Producto"}
-              width={30} height={30}
-              className="stock-list-img"
-            />
-          </li>
-          ))}
-        </ul>
+        {bajoStockLoading ? (
+          <p>Cargando...</p>
+        ) : bajoStock.length === 0 ? (
+          <p>No hay productos sin stock</p>
+        ) : (
+          <ul>
+            {bajoStock.map((item) => (
+              <li key={item._id} className="stock-list-item">
+                <span>{item.name}{item.marca ? ` (${item.marca})` : ""} - Stock: {item.stock}</span>
+                {item.image && (
+                  <Image
+                    src={`/uploads/${item.image}`}
+                    alt={item.name}
+                    width={30}
+                    height={30}
+                    className="stock-list-img"
+                  />
+                )}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Tabla secundaria: Productos Más Vendidos */}
