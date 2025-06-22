@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import './tables.css';
 import Image from 'next/image';
 
-const historialData = [
-  { fecha: "2024-06-01", venta: "Venta-01", total: "$150", metodo: "Efectivo" },
-  { fecha: "2024-06-02", venta: "Venta-02", total: "$100", metodo: "Tarjeta" },
-  { fecha: "2024-06-03", venta: "Venta-03", total: "$50", metodo: "Transferencia" },
-];
+interface VentaHistorial {
+  createdAt: string;
+  nfac: string;
+  totalVenta: number;
+  tipoPago?: string;
+  estado?: string;
+}
 
 const bajoStock = [
   "Producto-01",
@@ -30,6 +32,23 @@ function fillRows<T>(data: T[], min: number, max: number): (T | null)[] {
 }
 
 export default function Tables() {
+  const [historialData, setHistorialData] = useState<VentaHistorial[]>([]);
+
+  useEffect(() => {
+    const fetchVentas = async () => {
+      try {
+        const res = await fetch('/api/ventas', { credentials: 'include' });
+        if (res.ok) {
+          const data = await res.json();
+          setHistorialData(data);
+        }
+      } catch {
+        setHistorialData([]);
+      }
+    };
+    fetchVentas();
+  }, []);
+
   const historialRows = fillRows(historialData, 8, 8);
   const bajoStockRows = fillRows(bajoStock, 5, 5);
   const masVendidosRows = fillRows(masVendidos, 5, 5);
@@ -50,10 +69,10 @@ export default function Tables() {
           <tbody>
             {historialRows.map((row, idx) => (
               <tr key={idx}>
-                <td>{row?.fecha ?? ""}</td>
-                <td>{row?.venta ?? ""}</td>
-                <td>{row?.total ?? ""}</td>
-                <td>{row?.metodo ?? ""}</td>
+                <td>{row ? new Date(row.createdAt).toLocaleDateString() : ""}</td>
+                <td>{row?.nfac ?? ""}</td>
+                <td>{row ? `S/.${row.totalVenta.toFixed(2)}` : ""}</td>
+                <td>{row?.tipoPago ? `${row.tipoPago} (${row.estado})` : (row?.estado ? `(${row.estado})` : "")}</td>
               </tr>
             ))}
           </tbody>

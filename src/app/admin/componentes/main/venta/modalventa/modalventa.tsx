@@ -18,7 +18,7 @@ interface ModalVentaProps {
   }[];
   onVenta: (venta: {
     estado: "pendiente" | "pagado";
-    tipoPago: "efectivo" | "yape";
+    tipoPago: "efectivo";
     nfac: string;
   }) => void;
 }
@@ -37,7 +37,7 @@ export default function ModalVenta({
   carrito,
   onVenta,
 }: ModalVentaProps) {
-  const [tipoPago, setTipoPago] = useState<"efectivo" | "yape">("efectivo");
+  const [tipoPago] = useState<"efectivo">("efectivo");
   const nfac = generarNfac(proyectoid);
 
   if (!isOpen) return null;
@@ -47,17 +47,8 @@ export default function ModalVenta({
       <div className="modalventa-content">
         <h2>Confirmar Venta</h2>
         <div className="modalventa-tipopago">
-          <button
-            className={tipoPago === "efectivo" ? "active" : ""}
-            onClick={() => setTipoPago("efectivo")}
-          >
+          <button className="active">
             Efectivo
-          </button>
-          <button
-            className={tipoPago === "yape" ? "active" : ""}
-            onClick={() => setTipoPago("yape")}
-          >
-            Yape
           </button>
         </div>
         <div className="modalventa-factura">
@@ -71,13 +62,12 @@ export default function ModalVenta({
           )}
           <p><b>Total:</b> S/ {total.toFixed(2)}</p>
         </div>
-        {/* Puedes agregar aquí el formulario específico para Yape si lo necesitas */}
         <div className="modalventa-actions">
-          <button onClick={() => onVenta({ estado: "pendiente", tipoPago, nfac })}>
-            Guardar como Pendiente
-          </button>
           <button onClick={() => onVenta({ estado: "pagado", tipoPago, nfac })}>
-            Guardar como Pagado
+            Pago Completado
+          </button>
+          <button onClick={() => onVenta({ estado: "pendiente", tipoPago, nfac })}>
+            Guardar en cuenta cliente
           </button>
           <button onClick={onClose}>Cancelar</button>
         </div>

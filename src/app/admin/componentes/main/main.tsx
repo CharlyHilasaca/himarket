@@ -3,6 +3,7 @@ import Header from "../header/header";
 import Actions from "./actions/actions";
 import Tables from "./tables/tables";
 import Venta from "./venta/venta";
+import AddStock from "./addstock/addstock";
 import "./main.css"; // Importa el CSS aquí
 
 interface MainContentProps {
@@ -19,10 +20,11 @@ export default function MainContent({
   handleLogout,
 }: MainContentProps) {
   const [ventaOpen, setVentaOpen] = useState(false);
+  const [addStockOpen, setAddStockOpen] = useState(false);
 
   return (
     <div className="main-content">
-      {!ventaOpen && (
+      {!ventaOpen && !addStockOpen && (
         <>
           <Header
             adminName={adminName}
@@ -30,13 +32,21 @@ export default function MainContent({
             projectImage={projectImage}
             handleLogout={handleLogout}
           />
-          <Actions onVentaClick={() => setVentaOpen(true)} />
+          <Actions
+            onVentaClick={() => setVentaOpen(true)}
+            onAddStockClick={() => setAddStockOpen(true)}
+          />
           <Tables />
         </>
       )}
       {ventaOpen && (
         <div className="venta-overlay-full">
           <Venta onClose={() => setVentaOpen(false)} />
+        </div>
+      )}
+      {addStockOpen && (
+        <div className="venta-overlay-full">
+          <AddStock onClose={() => setAddStockOpen(false)} />
         </div>
       )}
     </div>
