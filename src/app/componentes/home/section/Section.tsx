@@ -1,0 +1,110 @@
+import Image from "next/image";
+import React, { useState, useEffect } from "react";
+
+interface Producto {
+  _id: string;
+  name: string;
+  marca?: string;
+  image: string;
+}
+
+interface SectionProps {
+  onSearchProduct: (id: string) => void;
+  onSearchText: (text: string) => void;
+  searchText: string;
+  resetKey: number;
+}
+
+export default function Section({ onSearchProduct, onSearchText, searchText, resetKey }: SectionProps) {
+  const [input, setInput] = useState(searchText || "");
+  const [productos, setProductos] = useState<Producto[]>([]);
+  const [suggestions, setSuggestions] = useState<Producto[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/products")
+      .then(res => res.json())
+      .then(setProductos);
+  }, []);
+
+  useEffect(() => {
+    setInput(""); // Limpiar el input si cambia la sección desde el header o resetKey
+  }, [searchText, resetKey]);
+
+  useEffect(() => {
+    if (input.length > 0) {
+      const filtered = productos.filter(p => p.name.toLowerCase().includes(input.toLowerCase()));
+      setSuggestions(filtered.slice(0, 5));
+      setShowDropdown(true);
+    } else {
+      setSuggestions([]);
+      setShowDropdown(false);
+    }
+  }, [input, productos]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSearchText(input);
+    setInput(""); // Limpiar el input después de buscar
+  };
+
+  const handleSelect = (prod: Producto) => {
+    setInput(""); // Limpiar el input después de seleccionar
+    setShowDropdown(false);
+    onSearchProduct(prod._id);
+  };
+
+  return (
+    <section className="w-full relative flex items-center justify-center min-h-[380px]">
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/abarrotes.png"
+          alt="Fondo abarrotes"
+          fill
+          className="object-cover w-full h-full pointer-events-none select-none"
+          priority
+        />
+      </div>
+      <div className="absolute inset-0 bg-white/15 backdrop-blur z-10 flex flex-col items-center justify-center px-4 py-12">
+        <h1 className="text-3xl font-bold mb-2 text-white-900 drop-shadow-lg text-center">
+          ¡Bienvenido a tu tienda de bodeguera favorita!
+        </h1>
+        <p className="text-lg text-white-800 mb-6 drop-shadow text-center">
+          Encuentra productos frescos, ofertas y la mejor atención para tu hogar.
+        </p>
+        <form className="w-full max-w-md mx-auto flex items-center gap-2 relative" onSubmit={handleSubmit} autoComplete="off">
+          <input
+            type="text"
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder="Buscar productos..."
+            className="flex-1 px-4 py-2 rounded-l bg-white/90 border border-green-300 focus:outline-none focus:ring-2 focus:ring-green-400 text-green-900 shadow"
+            onFocus={() => input && setShowDropdown(true)}
+            onBlur={() => setTimeout(() => setShowDropdown(false), 150)}
+          />
+          <button
+            type="submit"
+            className="px-4 py-2 rounded-r bg-green-700 text-white font-semibold hover:bg-green-800 transition shadow"
+          >
+            Buscar
+          </button>
+          {showDropdown && suggestions.length > 0 && (
+            <div className="absolute top-full left-0 w-full bg-white border border-green-200 rounded shadow z-20 mt-1 max-h-60 overflow-y-auto">
+              {suggestions.map(prod => (
+                <div
+                  key={prod._id}
+                  className="flex items-center gap-2 px-3 py-2 cursor-pointer hover:bg-green-100"
+                  onMouseDown={() => handleSelect(prod)}
+                >
+                  <Image src={prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`} alt={prod.name} width={32} height={32} />
+                  <span className="font-semibold text-green-900">{prod.name}</span>
+                  {prod.marca && <span className="text-green-700 text-xs ml-2">{prod.marca}</span>}
+                </div>
+              ))}
+            </div>
+          )}
+        </form>
+      </div>
+    </section>
+  );
+}

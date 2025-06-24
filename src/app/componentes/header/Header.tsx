@@ -1,6 +1,31 @@
 import Image from "next/image";
+import React, { useState, useRef } from "react";
+import { FaShoppingCart, FaChevronDown } from "react-icons/fa";
 
-export default function Header() {
+const navOptions = [
+  { label: "Inicio", value: "home" },
+  { label: "Productos", value: "productos" },
+  { label: "Ofertas", value: "ofertas" },
+  { label: "Nuevos Lanzamientos", value: "nuevos" },
+  { label: "Más vendidos", value: "masvendidos" },
+  { label: "Contacto", value: "contacto" },
+];
+
+export default function Header({ selected, onSelect, onLogin, onRegister, user, onLogout }: { selected: string; onSelect: (value: string) => void; onLogin?: () => void; onRegister?: () => void; user?: { username: string } | null, onLogout?: () => void }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Cierra el menú si se hace clic fuera
+  React.useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuOpen(false);
+      }
+    }
+    if (menuOpen) document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [menuOpen]);
+
   return (
     <header className="w-full bg-green-700 text-white py-4 px-6 flex items-center justify-between shadow-md">
       <div className="flex items-center gap-8">
@@ -9,14 +34,39 @@ export default function Header() {
           <span className="text-xl font-bold">HiMarket</span>
         </div>
         <nav className="flex items-center gap-4 ml-6">
-          <a href="#productos" className="hover:underline">Productos</a>
-          <a href="#ofertas" className="hover:underline">Ofertas</a>
-          <a href="#contacto" className="hover:underline">Contacto</a>
+          {navOptions.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => onSelect(opt.value)}
+              className={`px-3 py-1 rounded font-semibold transition ${selected === opt.value ? "bg-white text-green-700" : "hover:underline"}`}
+            >
+              {opt.label}
+            </button>
+          ))}
         </nav>
       </div>
-      <div className="flex gap-3">
-        <a href="/login" className="bg-white text-green-700 px-4 py-1 rounded font-semibold hover:bg-green-100 transition">Iniciar sesión</a>
-        <a href="/register" className="bg-yellow-400 text-green-900 px-4 py-1 rounded font-semibold hover:bg-yellow-300 transition">Registrarse</a>
+      <div className="flex gap-4 items-center min-w-[160px] justify-end">
+        {user ? (
+          <>
+            <FaShoppingCart className="text-2xl text-white" />
+            <div className="relative" ref={menuRef}>
+              <button onClick={() => setMenuOpen((v) => !v)} className="ml-2 flex items-center text-white font-semibold truncate max-w-[120px] focus:outline-none">
+                <span>{user.username}</span>
+                <FaChevronDown className="ml-1 text-xs" />
+              </button>
+              {menuOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white text-green-800 rounded shadow-lg z-50">
+                  <button onClick={onLogout} className="w-full text-left px-4 py-2 hover:bg-green-100">Cerrar sesión</button>
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            <button type="button" onClick={onLogin} className="bg-white text-green-700 px-4 py-1 rounded font-semibold hover:bg-green-100 transition">Iniciar sesión</button>
+            <button type="button" onClick={onRegister} className="bg-yellow-400 text-green-900 px-4 py-1 rounded font-semibold hover:bg-yellow-300 transition">Registrarse</button>
+          </>
+        )}
       </div>
     </header>
   );

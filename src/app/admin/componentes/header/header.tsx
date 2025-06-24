@@ -9,12 +9,12 @@ interface HeaderProps {
   handleLogout: () => void;
 }
 
-export default function Header({ adminName, selectedOption, projectImage, handleLogout }: HeaderProps) {
+export default function Header({ adminName, selectedOption, handleLogout }: HeaderProps) {
   return (
     <header className="header">
       <div className="project-info">
         <Image
-          src={projectImage}
+          src={/*projectImage || */"/logo1.png"}
           alt="Imagen del proyecto"
           width={50} height={50}
           className="project-image"

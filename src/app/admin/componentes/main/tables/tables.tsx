@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import './tables.css';
 import Image from 'next/image';
 
 interface VentaHistorial {
@@ -8,6 +7,8 @@ interface VentaHistorial {
   totalVenta: number;
   tipoPago?: string;
   estado?: string;
+  cliente?: string;
+  apellidos?: string;
 }
 
 interface ProductoBajoStock {
@@ -95,25 +96,28 @@ export default function Tables() {
   const historialRows = fillRows(historialData, 8, 8);
 
   return (
-    <section className="tables">
+    <section className="grid grid-cols-[2fr_1fr] gap-4 p-4">
       {/* Tabla principal: Historial de Ventas */}
-      <div className="table historial">
-        <table>
-          <thead>
+      <div className="bg-white p-4 rounded shadow-md h-[500px] col-start-1 col-end-2 row-start-1 row-end-5">
+        <table className="w-full border-collapse">
+            <thead>
             <tr>
-              <th>Fecha</th>
-              <th>Nº de venta</th>
-              <th>Total</th>
-              <th>Método de pago</th>
+              <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Fecha</th>
+              <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle w-full max-w-full">Ventas</th>
+              <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Total</th>
+              <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Método de pago</th>
             </tr>
           </thead>
           <tbody>
             {historialRows.map((row, idx) => (
-              <tr key={idx}>
-                <td>{row ? new Date(row.createdAt).toLocaleDateString() : ""}</td>
-                <td>{row?.nfac ?? ""}</td>
-                <td>{row ? `S/.${row.totalVenta.toFixed(2)}` : ""}</td>
-                <td>{row?.tipoPago ? `${row.tipoPago} (${row.estado})` : (row?.estado ? `(${row.estado})` : "")}</td>
+              <tr key={idx} className={idx % 2 === 1 ? "bg-gray-100" : ""}>
+                <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row ? new Date(row.createdAt).toLocaleDateString() : ""}</td>
+                <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black w-full max-w-full overflow-hidden text-ellipsis">
+                  <span className="block leading-tight text-sm text-gray-800">{row?.cliente || ''} {row?.apellidos || ''}</span>
+                  <span className="block text-xs text-gray-500">{row?.nfac ?? ""}</span>
+                </td>
+                <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row ? `S/.${row.totalVenta.toFixed(2)}` : ""}</td>
+                <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row?.tipoPago ? `${row.tipoPago} (${row.estado})` : (row?.estado ? `(${row.estado})` : "")}</td>
               </tr>
             ))}
           </tbody>
@@ -121,16 +125,16 @@ export default function Tables() {
       </div>
 
       {/* Tabla secundaria: Productos de Bajo Stock */}
-      <div className="table stock stock-scroll">
-        <h3>Productos de Bajo Stock</h3>
+      <div className="flex flex-col min-h-[230px] max-h-[230px] h-[230px] overflow-y-auto col-start-2 col-end-3 row-start-1 row-end-2 mb-4 bg-white p-4 rounded shadow-md">
+        <h3 className="mb-4 text-lg text-green-700 font-semibold">Productos de Bajo Stock</h3>
         {bajoStockLoading ? (
           <p>Cargando...</p>
         ) : bajoStock.length === 0 ? (
           <p>No hay productos sin stock</p>
         ) : (
-          <ul>
+          <ul className="list-none p-0 text-black">
             {bajoStock.map((item) => (
-              <li key={item._id} className="stock-list-item">
+              <li key={item._id} className="flex items-center justify-between my-2 px-2">
                 <span>{item.name}{item.marca ? ` (${item.marca})` : ""} - Stock: {item.stock}</span>
                 {item.image && (
                   <Image
@@ -138,7 +142,7 @@ export default function Tables() {
                     alt={item.name}
                     width={30}
                     height={30}
-                    className="stock-list-img"
+                    className="ml-4 w-8 h-8 object-contain"
                   />
                 )}
               </li>
@@ -148,24 +152,24 @@ export default function Tables() {
       </div>
 
       {/* Tabla secundaria: Productos Más Vendidos */}
-      <div className="table vendidos">
-        <h3>Productos Más Vendidos</h3>
+      <div className="flex flex-col min-h-[230px] max-h-[230px] h-[230px] overflow-y-auto col-start-2 col-end-3 row-start-2 row-end-3 bg-white p-4 rounded shadow-md">
+        <h3 className="mb-4 text-lg text-green-700 font-semibold">Productos Más Vendidos</h3>
         {masVendidosLoading ? (
           <p>Cargando...</p>
         ) : masVendidos.length === 0 ? (
           <p>No hay productos más vendidos</p>
         ) : (
-          <ul>
+          <ul className="list-none p-0 text-black">
             {masVendidos.map((item) => (
-              <li key={item._id} className="stock-list-item">
-                <span>{item.name}{item.marca ? ` (${item.marca})` : ""} - Vendidos: {item.cantidadVendida}</span>
+              <li key={item._id} className="flex items-center justify-between my-2 px-2">
+                <span>{item.name}{item.marca ? ` (${item.marca})` : ""} - Vendidos: {item.cantidadVendida.toFixed(2)}</span>
                 {item.image && (
                   <Image
                     src={`/masvendido.png`}
                     alt={item.name}
                     width={24}
                     height={24}
-                    className="stock-list-img"
+                    className="ml-4 w-6 h-6 object-contain"
                   />
                 )}
               </li>
