@@ -2,13 +2,6 @@ import React from "react";
 import Image from "next/image";
 import './tablas.css';
 
-interface Imagen {
-  id: number;
-  tipo_mime: string;
-  nombre: string;
-  url: string;
-}
-
 interface Proyecto {
   proyecto_id: number;
   categoria_id: number;
@@ -19,7 +12,7 @@ interface Proyecto {
   departamento: string;
   fecha_creacion: string;
   updated_at: string;
-  imagenes: Imagen[];
+  imagenes: string; // <-- Solo string
 }
 
 interface TablasProps {
@@ -72,23 +65,23 @@ export default function Tablas({ proyectos, onEdit }: TablasProps) {
                 <div className="text-sm text-gray-900">{proyecto.descripcion}</div>
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
-                {proyecto.imagenes && proyecto.imagenes.length > 0 ? (
-                  <div className="flex space-x-2">
-                    {proyecto.imagenes.map((imagen) => (
-                      <Image
-                        key={imagen.id}
-                        src={imagen.url}
-                        alt={imagen.nombre}
-                        width={64}
-                        height={64}
-                        className="h-16 w-16 object-cover rounded-lg"
-                        style={{ width: 64, height: "auto" }} // Asegura mantener la proporción
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-gray-500">Sin imagen</span>
-                )}
+                {proyecto.imagenes
+                  ? (
+                    <Image
+                      src={proyecto.imagenes.startsWith("/")
+                        ? proyecto.imagenes
+                        : `/${proyecto.imagenes}.png`}
+                      alt={proyecto.nombre}
+                      width={64}
+                      height={64}
+                      className="h-16 w-16 object-cover rounded-lg"
+                      style={{ width: 64, height: "auto" }}
+                    />
+                  )
+                  : (
+                    <span className="text-gray-500">Sin imagen</span>
+                  )
+                }
               </td>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="text-sm text-gray-900">{proyecto.distrito}</div>

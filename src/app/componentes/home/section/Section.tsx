@@ -13,19 +13,24 @@ interface SectionProps {
   onSearchText: (text: string) => void;
   searchText: string;
   resetKey: number;
+  proyectoId?: number | null; // <-- nuevo prop
 }
 
-export default function Section({ onSearchProduct, onSearchText, searchText, resetKey }: SectionProps) {
+export default function Section({ onSearchProduct, onSearchText, searchText, resetKey, proyectoId }: SectionProps) {
   const [input, setInput] = useState(searchText || "");
   const [productos, setProductos] = useState<Producto[]>([]);
   const [suggestions, setSuggestions] = useState<Producto[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
-    fetch("/api/products")
+    let url = "/api/products";
+    if (proyectoId) {
+      url = `/api/productsp?proyectoId=${proyectoId}`;
+    }
+    fetch(url)
       .then(res => res.json())
       .then(setProductos);
-  }, []);
+  }, [proyectoId]);
 
   useEffect(() => {
     setInput(""); // Limpiar el input si cambia la sección desde el header o resetKey
@@ -33,7 +38,23 @@ export default function Section({ onSearchProduct, onSearchText, searchText, res
 
   useEffect(() => {
     if (input.length > 0) {
-      const filtered = productos.filter(p => p.name.toLowerCase().includes(input.toLowerCase()));
+      // Ordenar por mejor coincidencia: primero los que empiezan igual, luego los que contienen
+      const inputLower = input.toLowerCase();
+      const startsWith = productos.filter(
+        p =>
+          p.name.toLowerCase().startsWith(inputLower) ||
+          (p.marca && p.marca.toLowerCase().startsWith(inputLower))
+      );
+      const contains = productos.filter(
+        p =>
+          !(
+            p.name.toLowerCase().startsWith(inputLower) ||
+            (p.marca && p.marca.toLowerCase().startsWith(inputLower))
+          ) &&
+          (p.name.toLowerCase().includes(inputLower) ||
+            (p.marca && p.marca.toLowerCase().includes(inputLower)))
+      );
+      const filtered = [...startsWith, ...contains];
       setSuggestions(filtered.slice(0, 5));
       setShowDropdown(true);
     } else {

@@ -10,18 +10,21 @@ interface Categoria {
   name: string;
 }
 
-export default function Main() {
+export default function Main({ proyectoId }: { proyectoId?: number | null }) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
 
   useEffect(() => {
-    fetch("/api/categories")
+    let url = "/api/categories";
+    if (proyectoId) {
+      url = `/api/categories/proyecto/${proyectoId}`;
+    }
+    fetch(url)
       .then((res) => res.json())
       .then((data) => setCategorias(data))
       .catch(() => setCategorias([]));
-  }, []);
+  }, [proyectoId]);
 
-  // Buscar el _id de la categoría seleccionada por nombre
   const selectedCategoryId =
     selectedCategory && selectedCategory !== "Todos"
       ? categorias.find((cat) => cat.name === selectedCategory)?._id || null
@@ -34,8 +37,8 @@ export default function Main() {
           Productos Destacados
         </h2>
         {/* Categorías dinámicas */}
-        <Category onSelect={setSelectedCategory} selectedName={selectedCategory || "Todos"} />
-        <ProductList categoryId={selectedCategoryId} />
+        <Category onSelect={setSelectedCategory} selectedName={selectedCategory || "Todos"} categorias={categorias} />
+        <ProductList categoryId={selectedCategoryId} proyectoId={proyectoId} />
       </div>
       {/* Beneficios */}
       <div className="bg-[#f8fafc] rounded-xl shadow flex flex-col md:flex-row justify-between items-center gap-6 p-8 mb-10">

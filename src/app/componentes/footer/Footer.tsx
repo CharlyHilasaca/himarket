@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <footer className="w-full bg-green-900 text-white pt-10 pb-4 px-4 mt-8">
+    <footer className="w-full bg-green-800 text-white pt-10 pb-4 px-4 mt-8">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 pb-6 border-b border-green-800">
         {/* Tienda */}
         <div>
@@ -44,8 +44,8 @@ export default function Footer() {
           <div className="w-10 h-1 bg-yellow-500 mb-3" />
           <ul className="space-y-2 text-sm">
             <li className="flex items-center gap-2">🏢 Calle Principal 123, Ciudad</li>
-            <li className="flex items-center gap-2">📞 +1 234 567 890</li>
-            <li className="flex items-center gap-2">📧 info@himarket.com</li>
+            <li className="flex items-center gap-2">📞 +51 943 574 633</li>
+            <li className="flex items-center gap-2">📧 hi.dev@gmail.com</li>
           </ul>
         </div>
       </div>

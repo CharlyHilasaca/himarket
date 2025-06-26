@@ -9,24 +9,52 @@ interface Producto {
   marca?: string;
   description?: string;
   image: string;
+  salePrice?: number; // <-- Añadido para mostrar el precio por proyecto
 }
 
-export default function ProductList({ categoryId }: { categoryId?: string | null }) {
+export default function ProductList({
+  categoryId,
+  proyectoId
+}: {
+  categoryId?: string | null;
+  proyectoId?: number | null;
+}) {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [startIdx, setStartIdx] = useState(0);
   const visibleCount = 8;
 
   useEffect(() => {
-    setStartIdx(0); // Reinicia la paginación al cambiar de categoría
+    setStartIdx(0); // Reinicia la paginación al cambiar de categoría o proyecto
     let url = "/api/products";
-    if (categoryId) {
+    if (proyectoId && categoryId) {
+      url = `/api/productsp?proyectoId=${proyectoId}&categoryId=${categoryId}`;
+    } else if (proyectoId) {
+      url = `/api/productsp?proyectoId=${proyectoId}`;
+    } else if (categoryId) {
       url = `/api/productsc/${categoryId}`;
     }
     fetch(url)
       .then((res) => res.json())
-      .then((data) => setProductos(data))
+      .then((data) => {
+        if (proyectoId) {
+          setProductos(
+            data.map((prod: any) => {
+              const projectDetail = Array.isArray(prod.projectDetails)
+                ? prod.projectDetails.find((pd: any) => String(pd.proyectoId) === String(proyectoId))
+                : undefined;
+              return {
+                ...prod,
+                name: prod.marca ? `${prod.name} - ${prod.marca}` : prod.name,
+                marca: projectDetail?.salePrice !== undefined ? `S/ ${projectDetail.salePrice}` : undefined,
+              };
+            })
+          );
+        } else {
+          setProductos(data);
+        }
+      })
       .catch(() => setProductos([]));
-  }, [categoryId]);
+  }, [categoryId, proyectoId]);
 
   const handlePrev = () => {
     setStartIdx((prev) => Math.max(0, prev - visibleCount));
@@ -63,7 +91,14 @@ export default function ProductList({ categoryId }: { categoryId?: string | null
         {visibleProductos.map((prod) => (
           <div key={prod._id} className="bg-white rounded-lg shadow p-4 flex flex-col justify-between items-center h-[auto] min-h-[auto] cursor-pointer">
             <div className="flex flex-col items-center w-full flex-1">
-              <Image src={prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`} alt={prod.name} width={80} height={80} />
+              <div className="w-[100px] h-[100px] relative flex items-center justify-center">
+                <Image
+                  src={prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`}
+                  alt={prod.name}
+                  fill
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
               <h3 className="mt-2 font-bold text-green-900 text-center w-full min-h-[32px] flex items-center justify-center">{prod.name}</h3>
               <span className="text-green-700 text-sm min-h-[20px] flex items-center justify-center w-full">{prod.marca || "\u00A0"}</span>
             </div>

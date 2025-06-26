@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 interface Categoria {
@@ -7,22 +7,21 @@ interface Categoria {
   name: string;
 }
 
-const visibleCount = 5; // Ahora mostramos 5, incluyendo "Todos"
+const visibleCount = 5;
 
-export default function Category({ onSelect, selectedName }: { onSelect?: (name: string) => void, selectedName?: string }) {
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [startIdx, setStartIdx] = useState(0);
-  const [animDirection, setAnimDirection] = useState<"left"|"right"|null>(null);
+export default function Category({
+  onSelect,
+  selectedName,
+  categorias = []
+}: {
+  onSelect?: (name: string) => void;
+  selectedName?: string;
+  categorias?: Categoria[];
+}) {
+  const [startIdx, setStartIdx] = React.useState(0);
+  const [animDirection, setAnimDirection] = React.useState<"left" | "right" | null>(null);
 
-  // Incluimos "Todos" como una categoría especial
   const allCategorias = [{ _id: "all", name: "Todos" }, ...categorias];
-
-  useEffect(() => {
-    fetch("/api/categories")
-      .then((res) => res.json())
-      .then((data) => setCategorias(data))
-      .catch(() => setCategorias([]));
-  }, []);
 
   const handlePrev = () => {
     setAnimDirection("left");
@@ -39,7 +38,6 @@ export default function Category({ onSelect, selectedName }: { onSelect?: (name:
     }, 200);
   };
 
-  // Rotar circularmente
   const visibleCategorias = [];
   for (let i = 0; i < visibleCount; i++) {
     visibleCategorias.push(allCategorias[(startIdx + i) % allCategorias.length]);

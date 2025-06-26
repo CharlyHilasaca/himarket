@@ -5,13 +5,6 @@ import Tablas from "./tablas/tablas";
 import Modal from "./modal/modal";
 import ModalEdit from "./modaledit/modaledit";
 
-interface Imagen {
-  id: number;
-  tipo_mime: string;
-  nombre: string;
-  url: string;
-}
-
 interface Proyecto {
   proyecto_id: number;
   categoria_id: number;
@@ -22,7 +15,7 @@ interface Proyecto {
   departamento: string;
   fecha_creacion: string;
   updated_at: string;
-  imagenes: Imagen[];
+  imagenes: string; // <-- Solo string
 }
 
 interface ProyectoData {
@@ -44,7 +37,7 @@ export default function Proyectos() {
 
   const fetchProyectos = async () => {
     try {
-      const response = await fetch("/api/dev/proyectos", {
+      const response = await fetch("/api/proyectos", {
         credentials: "include",
       });
 
@@ -70,7 +63,7 @@ export default function Proyectos() {
     setProyectoSeleccionado(null);
   };
 
-  const handleEdit = async (proyecto: Proyecto) => {
+  const handleEdit = (proyecto: Proyecto) => {
     setProyectoSeleccionado(proyecto);
     setIsEditModalOpen(true);
   };

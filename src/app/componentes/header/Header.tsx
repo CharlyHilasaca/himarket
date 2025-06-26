@@ -11,7 +11,23 @@ const navOptions = [
   { label: "Contacto", value: "contacto" },
 ];
 
-export default function Header({ selected, onSelect, onLogin, onRegister, user, onLogout }: { selected: string; onSelect: (value: string) => void; onLogin?: () => void; onRegister?: () => void; user?: { username: string } | null, onLogout?: () => void }) {
+export default function Header({
+  selected,
+  onSelect,
+  onLogin,
+  onRegister,
+  user,
+  onLogout,
+  proyectoNombre // <-- nuevo prop
+}: {
+  selected: string;
+  onSelect: (value: string) => void;
+  onLogin?: () => void;
+  onRegister?: () => void;
+  user?: { username?: string, email?: string } | null;
+  onLogout?: () => void;
+  proyectoNombre?: string | null;
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -27,11 +43,13 @@ export default function Header({ selected, onSelect, onLogin, onRegister, user, 
   }, [menuOpen]);
 
   return (
-    <header className="w-full bg-green-700 text-white py-4 px-6 flex items-center justify-between shadow-md">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-green-700 text-white py-4 px-6 flex items-center justify-between shadow-md">
       <div className="flex items-center gap-8">
         <div className="flex items-center gap-2">
           <Image src="/logo2.png" alt="Logo" width={40} height={40} />
-          <span className="text-xl font-bold">HiMarket</span>
+          <span className="text-xl font-bold">
+            {proyectoNombre ? proyectoNombre : "HiMarket"}
+          </span>
         </div>
         <nav className="flex items-center gap-4 ml-6">
           {navOptions.map((opt) => (
@@ -51,7 +69,11 @@ export default function Header({ selected, onSelect, onLogin, onRegister, user, 
             <FaShoppingCart className="text-2xl text-white" />
             <div className="relative" ref={menuRef}>
               <button onClick={() => setMenuOpen((v) => !v)} className="ml-2 flex items-center text-white font-semibold truncate max-w-[120px] focus:outline-none">
-                <span>{user.username}</span>
+                <span>
+                  {user.username
+                    ? user.username
+                    : (user.email ? user.email.split("@")[0] : "")}
+                </span>
                 <FaChevronDown className="ml-1 text-xs" />
               </button>
               {menuOpen && (

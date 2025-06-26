@@ -10,19 +10,50 @@ interface Producto {
   description?: string;
   image: string;
   categoryIds?: string[];
+  salePrice?: number; // <-- Añadido para mostrar el precio por proyecto
 }
 
-export default function Products({ initialSearch = "", resetKey }: { initialSearch?: string, onProductClick?: (id: string) => void, resetKey?: number }) {
+export default function Products({
+  initialSearch = "",
+  resetKey,
+  proyectoId
+}: {
+  initialSearch?: string;
+  onProductClick?: (id: string) => void;
+  resetKey?: number;
+  proyectoId?: number | null;
+}) {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [search, setSearch] = useState(initialSearch);
   const [filtered, setFiltered] = useState<Producto[]>([]);
 
   useEffect(() => {
-    fetch("/api/products")
+    let url = "/api/products";
+    if (proyectoId) {
+      url = `/api/productsp?proyectoId=${proyectoId}`;
+    }
+    fetch(url)
       .then((res) => res.json())
-      .then((data) => setProductos(data))
+      .then((data) => {
+        if (proyectoId) {
+          setProductos(
+            data.map((prod: any) => {
+              const projectDetail = Array.isArray(prod.projectDetails)
+                ? prod.projectDetails.find((pd: any) => String(pd.proyectoId) === String(proyectoId))
+                : undefined;
+              return {
+                ...prod,
+                name: prod.marca ? `${prod.name} - ${prod.marca}` : prod.name,
+                marca: projectDetail?.salePrice !== undefined ? `S/ ${projectDetail.salePrice}` : undefined,
+              };
+            })
+          );
+        } else {
+          setProductos(data);
+        }
+      })
       .catch(() => setProductos([]));
-  }, []);
+  }, [proyectoId, resetKey]);
 
   useEffect(() => {
     if (!search) {
@@ -31,7 +62,6 @@ export default function Products({ initialSearch = "", resetKey }: { initialSear
     }
     const match = productos.find(p => p.name.toLowerCase().includes(search.toLowerCase()));
     if (match) {
-      // Primero el producto que coincide, luego los de su categoría (sin repetir)
       const sameCat = productos.filter(p => p._id !== match._id && p.categoryIds?.some(cid => match.categoryIds?.includes(cid)));
       setFiltered([match, ...sameCat]);
     } else {
@@ -40,7 +70,7 @@ export default function Products({ initialSearch = "", resetKey }: { initialSear
   }, [search, productos]);
 
   useEffect(() => {
-    setSearch(initialSearch || ""); // Limpiar el input si cambia la sección o el valor inicial
+    setSearch(initialSearch || "");
   }, [initialSearch, resetKey]);
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,7 +93,14 @@ export default function Products({ initialSearch = "", resetKey }: { initialSear
           {filtered.map(prod => (
             <div key={prod._id} className="bg-white rounded-lg shadow p-4 flex flex-col justify-between items-center h-[auto] min-h-[auto] cursor-pointer">
               <div className="flex flex-col items-center w-full flex-1">
-                <Image src={prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`} alt={prod.name} width={80} height={80} />
+                <div className="w-[100px] h-[100px] relative flex items-center justify-center">
+                  <Image
+                    src={prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`}
+                    alt={prod.name}
+                    fill
+                    style={{ objectFit: "contain" }}
+                  />
+                </div>
                 <h3 className="mt-2 font-bold text-green-900 text-center w-full min-h-[32px] flex items-center justify-center">{prod.name}</h3>
                 <span className="text-green-700 text-sm min-h-[20px] flex items-center justify-center w-full">{prod.marca || "\u00A0"}</span>
               </div>
@@ -74,7 +111,6 @@ export default function Products({ initialSearch = "", resetKey }: { initialSear
           ))}
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
