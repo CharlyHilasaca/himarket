@@ -300,6 +300,18 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
     }
   };
 
+  // Sincroniza el localStorage cuando el carrito se limpia desde otro lugar (ej: pago exitoso)
+  useEffect(() => {
+    const handleCarritoLimpiado = () => {
+      setCarrito(null);
+      localStorage.removeItem("carrito");
+    };
+    window.addEventListener("carrito-limpiado", handleCarritoLimpiado);
+    return () => {
+      window.removeEventListener("carrito-limpiado", handleCarritoLimpiado);
+    };
+  }, []);
+
   if (!isOpen) return null;
 
   return (
