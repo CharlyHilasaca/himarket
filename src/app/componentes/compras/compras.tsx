@@ -1,5 +1,7 @@
 "use client";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
+import YapeForm from "../pagos/YapeForm";
+import Modal from "react-modal";
 
 interface ProductoCarrito {
   producto_id: string;
@@ -8,7 +10,7 @@ interface ProductoCarrito {
   cantidad: number;
   precio: number;
   unidad?: string;
-  stock?: number; // Agregado para manejar el stock
+  stock?: number;
 }
 
 interface Carrito {
@@ -32,11 +34,9 @@ interface Unidad {
   description?: string;
 }
 
-// Define un tipo para los productos de la API
 type ProductoApi = {
   _id: string;
   projectDetails?: { salePrice?: number }[];
-  // Puedes agregar más campos si los necesitas
 };
 
 export default function Compras({ isOpen, onClose }: ComprasProps) {
@@ -48,7 +48,9 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
   const [editCantidad, setEditCantidad] = useState<{ [id: string]: string }>({});
   const [editPrecio, setEditPrecio] = useState<{ [id: string]: string }>({});
   const [preciosOriginales, setPreciosOriginales] = useState<{ [producto_id: string]: number }>({});
-  const sidebarRef = useRef<HTMLDivElement>(null);
+  const [showPago, setShowPago] = useState(false);
+  const [pagoStatus, setPagoStatus] = useState<string | null>(null);
+  const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   // Obtener o crear el carrito al abrir el modal
   useEffect(() => {
@@ -110,21 +112,6 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
       })
       .catch(() => setPreciosOriginales({}));
   }, [isOpen]);
-
-  // Cerrar al hacer click fuera del sidebar
-  useEffect(() => {
-    if (!isOpen) return;
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        sidebarRef.current &&
-        !sidebarRef.current.contains(event.target as Node)
-      ) {
-        onClose();
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isOpen, onClose]);
 
   // Actualizar el carrito en el backend
   const actualizarCarrito = async (productos: ProductoCarrito[]) => {
@@ -291,29 +278,75 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
     }, 0);
   };
 
+  // Maneja el token recibido desde el formulario Yape
+  const handleYapeToken = async (token: string) => {
+    setPagoStatus("procesando");
+    try {
+      // Calcula el total usando la función del footer fijo
+      const monto = calcularTotal();
+      const res = await fetch("/api/pagos/yape", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          token,
+          email: carrito?.cliente_id,
+          monto, // <-- usa el total calculado del footer fijo
+          descripcion: "Pago de carrito"
+        }),
+      });
+      const data = await res.json();
+      if (data.status === "approved") {
+        setPagoStatus("aprobado");
+      } else {
+        setPagoStatus("rechazado: " + (data.status_detail || "Error"));
+      }
+    } catch {
+      setPagoStatus("error");
+    }
+  };
+
+  // Maneja el pago con Checkout Pro
+  const handleCheckoutPro = async () => {
+    const monto = calcularTotal();
+    console.log("[Compras] Intentando iniciar pago con Mercado Pago. Monto:", monto);
+    try {
+      const res = await fetch("/api/pagos/checkoutpro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          monto,
+          descripcion: "Pago de carrito"
+        }),
+      });
+      const data = await res.json();
+      console.log("[Compras] Respuesta backend /pagos/checkoutpro:", data);
+      // Redirige al usuario al sitio de pago de Mercado Pago usando init_point
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        alert("No se pudo iniciar el pago con Mercado Pago.");
+      }
+    } catch (err) {
+      console.error("[Compras] Error iniciando el pago con Mercado Pago:", err);
+      alert("Error iniciando el pago con Mercado Pago.");
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen z-[1200] flex items-start justify-end bg-black/0 ">
-      <div
-        ref={sidebarRef}
-        className={`relative h-screen w-full max-w-[410px] bg-white shadow-2xl flex flex-col transition-transform duration-300 z-[1300] ${
-          isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-      >
-        {/* Header fijo */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200 bg-white min-h-[72px] relative z-10">
-          <h2 className="text-xl font-bold text-green-800">Carrito de Compras</h2>
+    <div ref={sidebarRef} className="w-full min-h-screen flex flex-col items-center justify-start bg-white">
+      <div className="w-full max-w-2xl mx-auto flex flex-col bg-white rounded-lg shadow-lg mt-8 mb-8 border border-gray-200">
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200 bg-white min-h-[72px] relative z-10 rounded-t-lg">
+          <h2 className="text-2xl font-bold text-green-800">Carrito de Compras</h2>
           <button
-            className="absolute top-4 right-5 text-3xl text-gray-600 bg-none border-none cursor-pointer hover:text-red-600"
+            className="text-2xl text-gray-400 hover:text-red-600 transition"
             onClick={onClose}
-            aria-label="Cerrar"
-            type="button"
-          >
-            ×
-          </button>
+            aria-label="Volver"
+          >×</button>
         </div>
-        {/* Contenido scrollable */}
+        {/* Contenido */}
         <div className="flex-1 overflow-y-auto px-6 py-6 bg-white">
           {loading ? (
             <div className="text-center py-8 text-gray-400">Cargando...</div>
@@ -430,7 +463,7 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
           )}
         </div>
         {/* Footer fijo */}
-        <div className="flex flex-col border-t border-gray-200 bg-white px-6 py-4 z-10">
+        <div className="flex flex-col border-t border-gray-200 bg-white px-6 py-4 z-10 rounded-b-lg">
           <div className="flex justify-between items-center font-bold text-green-800 text-lg mb-3">
             <span>Total:</span>
             <span>
@@ -438,13 +471,55 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
             </span>
           </div>
           <button
-            className="w-full bg-green-800 text-white py-2 rounded font-semibold cursor-not-allowed opacity-80"
-            disabled
+            className="w-full bg-green-800 text-white py-2 rounded font-semibold transition hover:bg-green-900"
+            disabled={!carrito || carrito.productos.length === 0}
             type="button"
+            onClick={handleCheckoutPro}
           >
-            Proceder al pago (próximamente)
+            Pagar con Mercado Pago
+          </button>
+          <button
+            className="w-full mt-2 bg-gray-200 text-green-800 py-2 rounded font-semibold transition hover:bg-gray-300"
+            type="button"
+            onClick={onClose}
+          >
+            Volver
           </button>
         </div>
+        {/* Modal de pago */}
+        <Modal
+          isOpen={showPago}
+          onRequestClose={() => {
+            setShowPago(false);
+            setPagoStatus(null);
+          }}
+          className="fixed inset-0 flex items-center justify-center z-[2000] bg-black bg-opacity-40"
+          overlayClassName="fixed inset-0 bg-black bg-opacity-40 z-[2000]"
+          ariaHideApp={false}
+          shouldCloseOnOverlayClick={false}
+          shouldCloseOnEsc={false}
+        >
+          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full relative flex flex-col items-center">
+            <button
+              className="absolute top-3 right-4 text-2xl text-gray-400 hover:text-red-600 transition"
+              onClick={() => { setShowPago(false); setPagoStatus(null); }}
+              aria-label="Cerrar"
+            >×</button>
+            <h2 className="text-2xl font-bold mb-6 text-green-800 text-center">Pago con Yape</h2>
+            {pagoStatus === "aprobado" ? (
+              <div className="text-green-700 font-semibold text-center text-lg py-6">¡Pago exitoso!</div>
+            ) : pagoStatus && pagoStatus !== "procesando" ? (
+              <div className="text-red-600 font-semibold text-center text-lg py-6">Error: {pagoStatus}</div>
+            ) : (
+              <div className="w-full">
+                <YapeForm onToken={handleYapeToken} />
+              </div>
+            )}
+            {pagoStatus === "procesando" && (
+              <div className="text-center text-gray-500 mt-4">Procesando pago...</div>
+            )}
+          </div>
+        </Modal>
       </div>
     </div>
   );

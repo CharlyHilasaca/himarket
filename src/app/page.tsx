@@ -97,6 +97,10 @@ export default function Home() {
         proyectoId={typeof proyecto?.proyecto_id === "number" ? proyecto.proyecto_id : null}
       />
     );
+  } else if (showCarrito) {
+    content = (
+      <Compras isOpen={showCarrito} onClose={() => setShowCarrito(false)} />
+    );
   } else if (selected === "home" || selected === "ofertas") {
     content = <HomeContent
       onSearchProduct={(id) => setShowProductDetail(id)}
@@ -171,9 +175,6 @@ export default function Home() {
       <div className="flex-1 flex flex-col min-h-0">
         {content}
       </div>
-      {showCarrito && (
-        <Compras isOpen={showCarrito} onClose={() => setShowCarrito(false)} />
-      )}
       {showLogin && (
         <LoginOverlay
           onClose={() => setShowLogin(false)}
