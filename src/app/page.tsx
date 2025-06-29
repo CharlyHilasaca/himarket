@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import Compras from "./componentes/compras/compras";
 import Header from "./componentes/header/Header";
 import HomeContent from "./componentes/home/home";
 import Products from "./componentes/products/products";
@@ -11,7 +12,6 @@ import Nuevos from "./componentes/nuevos/Nuevos";
 import Contacto from "./componentes/contacto/Contacto";
 import Footer from "./componentes/footer/Footer";
 import ProyectoModal from "./form/form";
-import Compras from "./componentes/compras/compras";
 
 export default function Home() {
   const [selected, setSelected] = useState("home");
@@ -24,6 +24,7 @@ export default function Home() {
   const [showProyectoModal, setShowProyectoModal] = useState(false);
   const [proyecto, setProyecto] = useState<{ [key: string]: unknown } | null>(null);
   const [showCarrito, setShowCarrito] = useState(false);
+  const [carritoCantidad, setCarritoCantidad] = useState(0);
 
   // Cada vez que se cambia de sección, incrementa resetKey
   const handleSelect = (value: string) => {
@@ -117,6 +118,7 @@ export default function Home() {
           onProductClick={id => setShowProductDetail(id)}
           resetKey={resetKey}
           proyectoId={typeof proyecto?.proyecto_id === "number" ? proyecto.proyecto_id : null}
+          onCarritoChange={setCarritoCantidad}
         />
         <Footer />
       </>
@@ -164,7 +166,11 @@ export default function Home() {
         onLogout={handleLogout}
         proyectoNombre={typeof proyecto?.nombre === "string" ? proyecto.nombre : null}
         onCarritoClick={() => setShowCarrito(true)}
+        carritoCantidad={carritoCantidad}
       />
+      <div className="flex-1 flex flex-col min-h-0">
+        {content}
+      </div>
       {showCarrito && (
         <Compras isOpen={showCarrito} onClose={() => setShowCarrito(false)} />
       )}
@@ -187,9 +193,6 @@ export default function Home() {
           onSuccess={fetchUser}
         />
       )}
-      <div className="flex-1 flex flex-col min-h-0">
-        {content}
-      </div>
     </div>
   );
 }

@@ -1,6 +1,19 @@
 import Image from "next/image";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { FaShoppingCart, FaChevronDown } from "react-icons/fa";
+
+// Función auxiliar para obtener la cantidad de productos únicos en el carrito
+async function getCantidadProductosUnicos(): Promise<number> {
+  try {
+    const res = await fetch("/api/carrito", { credentials: "include" });
+    if (!res.ok) return 0;
+    const data = await res.json();
+    if (!data.productos) return 0;
+    return Array.isArray(data.productos) ? data.productos.length : 0;
+  } catch {
+    return 0;
+  }
+}
 
 const navOptions = [
   { label: "Inicio", value: "home" },
@@ -19,7 +32,8 @@ export default function Header({
   user,
   onLogout,
   proyectoNombre,
-  onCarritoClick // <-- nuevo prop
+  onCarritoClick,
+  carritoCantidad // este prop sigue funcionando como trigger de actualización
 }: {
   selected: string;
   onSelect: (value: string) => void;
@@ -28,10 +42,21 @@ export default function Header({
   user?: { username?: string, email?: string } | null;
   onLogout?: () => void;
   proyectoNombre?: string | null;
-  onCarritoClick?: () => void; // <-- nuevo prop
+  onCarritoClick?: () => void;
+  carritoCantidad?: number;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [cantidadUnicos, setCantidadUnicos] = useState<number>(0);
+
+  // Cargar cantidad de productos únicos en el carrito al montar y cuando cambia carritoCantidad
+  useEffect(() => {
+    let mounted = true;
+    getCantidadProductosUnicos().then((cant) => {
+      if (mounted) setCantidadUnicos(cant);
+    });
+    return () => { mounted = false; };
+  }, [carritoCantidad]);
 
   // Cierra el menú si se hace clic fuera
   React.useEffect(() => {
@@ -71,10 +96,15 @@ export default function Header({
             <button
               type="button"
               onClick={onCarritoClick}
-              className="focus:outline-none"
+              className="focus:outline-none relative"
               title="Ver carrito de compras"
             >
               <FaShoppingCart className="text-2xl text-white" />
+              {cantidadUnicos > 0 && (
+                <span className="carrito-badge">
+                  {cantidadUnicos}
+                </span>
+              )}
             </button>
             <div className="relative" ref={menuRef}>
               <button onClick={() => setMenuOpen((v) => !v)} className="ml-2 flex items-center text-white font-semibold truncate max-w-[120px] focus:outline-none">

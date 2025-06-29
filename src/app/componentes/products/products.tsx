@@ -5,6 +5,7 @@ import Image from "next/image";
 interface ProjectDetail {
   proyectoId: string | number;
   salePrice?: number;
+  unidad?: string;
 }
 
 interface Producto {
@@ -21,12 +22,14 @@ interface Producto {
 export default function Products({
   initialSearch = "",
   resetKey,
-  proyectoId
+  proyectoId,
+  onCarritoChange // nuevo prop opcional
 }: {
   initialSearch?: string;
   onProductClick?: (id: string) => void;
   resetKey?: number;
   proyectoId?: number | null;
+  onCarritoChange?: (cantidad: number) => void; // nuevo prop
 }) {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [search, setSearch] = useState(initialSearch);
@@ -90,6 +93,81 @@ export default function Products({
     if (page > 0 && page >= totalPages) setPage(0);
   }, [search, totalPages, page]);
 
+  // Elimina carritoCantidad, solo usa onCarritoChange para comunicar el cambio
+  // const [carritoCantidad, setCarritoCantidad] = useState(0);
+
+  // Obtener cantidad de productos en el carrito al cargar
+  useEffect(() => {
+    fetch("/api/carrito", { credentials: "include" })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data && Array.isArray(data.productos)) {
+          if (onCarritoChange) {
+            onCarritoChange(data.productos.length);
+          }
+        }
+      });
+    // Incluye onCarritoChange en dependencias
+  }, [onCarritoChange]);
+
+  // Función para agregar producto al carrito
+  const handleAgregarCarrito = async (prod: Producto) => {
+    // Obtener el carrito actual
+    const res = await fetch("/api/carrito", { credentials: "include" });
+    let carrito: { productos: {
+      producto_id: string;
+      name: string;
+      marca?: string;
+      cantidad: number;
+      precio: number;
+      unidad?: string;
+    }[] } | null = null;
+    if (res.ok) {
+      carrito = await res.json();
+    } else {
+      // Si no existe, créalo
+      const createRes = await fetch("/api/carrito", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+      });
+      if (createRes.ok) {
+        const data = await createRes.json();
+        carrito = data.carrito;
+      }
+    }
+    if (!carrito) return;
+
+    // Buscar si ya está el producto
+    const productos = carrito.productos || [];
+    const idx = productos.findIndex((p) => p.producto_id === prod._id);
+    if (idx !== -1) {
+      productos[idx].cantidad += 1;
+    } else {
+      productos.push({
+        producto_id: prod._id,
+        name: prod.name,
+        marca: prod.marca,
+        cantidad: 1,
+        precio: prod.projectDetails?.[0]?.salePrice || prod.salePrice || 0,
+        unidad: prod.projectDetails?.[0]?.unidad || "",
+      });
+    }
+    // Actualizar el carrito
+    const total = productos.reduce((acc: number, p) => acc + p.precio * p.cantidad, 0);
+    const putRes = await fetch("/api/carrito", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productos, total }),
+    });
+    if (putRes.ok) {
+      if (onCarritoChange) {
+        onCarritoChange(productos.length);
+      }
+    }
+  };
+
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
@@ -147,7 +225,12 @@ export default function Products({
                     <span className="text-green-700 text-sm min-h-[20px] flex items-center justify-center w-full">{prod.marca || "\u00A0"}</span>
                   </div>
                   <div className="w-full flex items-end justify-center mt-2 min-h-[40px]">
-                    <button className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-full max-w-[120px]">Agregar</button>
+                    <button
+                      className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-full max-w-[120px]"
+                      onClick={() => handleAgregarCarrito(prod)}
+                    >
+                      Agregar
+                    </button>
                   </div>
                 </div>
               ))}

@@ -32,14 +32,17 @@ interface Producto {
 
 export default function ProductList({
   categoryId,
-  proyectoId
+  proyectoId,
+  onCarritoChange // nuevo prop
 }: {
   categoryId?: string | null;
   proyectoId?: number | null;
+  onCarritoChange?: (cantidad: number) => void; // nuevo prop
 }) {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [unidades, setUnidades] = useState<Unidad[]>([]);
   const [startIdx, setStartIdx] = useState(0);
+  const [agregando, setAgregando] = useState<string | null>(null);
   const visibleCount = 8;
 
   useEffect(() => {
@@ -95,6 +98,77 @@ export default function ProductList({
     );
   };
 
+  const handleAgregar = async (prod: Producto) => {
+    // Validar stock antes de intentar agregar
+    const stock =
+      typeof prod.stock === "number"
+        ? prod.stock
+        : Array.isArray(prod.projectDetails)
+        ? prod.projectDetails[0]?.stock
+        : undefined;
+    if (typeof stock !== "number" || stock <= 0) {
+      setAgregando(null);
+      return;
+    }
+    setAgregando(prod._id);
+    // Construir el producto para el carrito
+    const productoCarrito = {
+      producto_id: prod._id,
+      name: prod.name,
+      marca: prod.marca,
+      cantidad: 1,
+      precio: prod.projectDetails?.[0]?.salePrice ?? prod.salePrice ?? 0,
+      unidad: prod.projectDetails?.[0]?.unidad
+    };
+    // Obtener el carrito actual
+    let carrito;
+    try {
+      const res = await fetch("/api/carrito", { credentials: "include" });
+      if (res.ok) {
+        carrito = await res.json();
+      } else {
+        // Si no existe, crearlo
+        const crear = await fetch("/api/carrito", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" }
+        });
+        carrito = await crear.json();
+        carrito = carrito.carrito;
+      }
+    } catch {
+      setAgregando(null);
+      return;
+    }
+    // Verificar si ya está el producto
+    const productos = Array.isArray(carrito.productos) ? [...carrito.productos] : [];
+    interface CarritoProducto {
+      producto_id: string;
+      name: string;
+      marca?: string;
+      cantidad: number;
+      precio: number;
+      unidad?: string;
+    }
+
+    const idx = productos.findIndex((p: CarritoProducto) => p.producto_id === prod._id);
+    if (idx >= 0) {
+      productos[idx].cantidad += 1;
+    } else {
+      productos.push(productoCarrito);
+    }
+    const total = productos.reduce((acc: number, p: CarritoProducto) => acc + p.precio * p.cantidad, 0);
+    // Actualizar el carrito
+    await fetch("/api/carrito", {
+      method: "PUT",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ productos, total })
+    });
+    setAgregando(null);
+    if (onCarritoChange) onCarritoChange(productos.reduce((acc: number, p: CarritoProducto) => acc + p.cantidad, 0));
+  };
+
   const visibleProductos = productos.slice(startIdx, startIdx + visibleCount);
 
   return (
@@ -125,24 +199,6 @@ export default function ProductList({
               ? prod.projectDetails[0]?.stock
               : undefined
           );
-          const stockmayor = typeof prod.stockmayor === "number" ? prod.stockmayor : (
-            Array.isArray(prod.projectDetails)
-              ? prod.projectDetails[0]?.stockmayor
-              : undefined
-          );
-          let alerta = null;
-          if (
-            proyectoId &&
-            typeof proyectoId === "number" &&
-            typeof stock === "number" &&
-            typeof stockmayor === "number"
-          ) {
-            if (stock === 0) {
-              alerta = <span className="text-red-600 font-bold text-xs mt-1">Sin stock</span>;
-            } else if (stockmayor > 0 && stock < stockmayor * 0.15) {
-              alerta = <span className="text-yellow-600 font-bold text-xs mt-1">Bajo stock</span>;
-            }
-          }
           let unidadAbrev = "";
             let unidadId: string | undefined = undefined;
           if (typeof prod.stock === "number" || (Array.isArray(prod.projectDetails) && prod.projectDetails[0])) {
@@ -173,10 +229,19 @@ export default function ProductList({
                     {unidadAbrev && <> {unidadAbrev}</>}
                   </span>
                 )}
-                {alerta}
               </div>
               <div className="w-full flex items-end justify-center mt-2 min-h-[40px]">
-                <button className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-full max-w-[120px]">Agregar</button>
+                <button
+                  className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-full max-w-[120px] flex items-center justify-center"
+                  onClick={() => handleAgregar(prod)}
+                  disabled={agregando === prod._id || typeof stock !== "number" || stock <= 0}
+                >
+                  {typeof stock !== "number" || stock <= 0
+                    ? "Sin stock"
+                    : agregando === prod._id
+                    ? "Agregando..."
+                    : "Agregar"}
+                </button>
               </div>
             </div>
           );

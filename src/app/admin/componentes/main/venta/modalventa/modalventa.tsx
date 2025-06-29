@@ -27,7 +27,6 @@ export default function ModalVenta({
   onClose,
   cliente,
   total,
-  proyectoid,
   onVenta,
 }: ModalVentaProps) {
   const [tipoPago] = useState<"efectivo">("efectivo");

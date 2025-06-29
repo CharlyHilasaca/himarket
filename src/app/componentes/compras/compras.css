@@ -1,45 +1,65 @@
 .compras-overlay {
   position: fixed;
-  inset: 0;
-  z-index: 50;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1200;
   display: flex;
   align-items: flex-start;
   justify-content: flex-end;
+  background: rgba(0,0,0,0.35);
+  /* No cubre el header si el header tiene z-index mayor */
+  pointer-events: auto;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
 }
-.compras-overlay-bg {
-  position: absolute;
-  inset: 0;
-  background: rgba(0,0,0,0.4);
-  z-index: 49;
-}
+
 .compras-sidebar {
-  height: 100%;
+  position: relative;
+  height: 100vh;
   width: 100%;
-  max-width: 28rem;
+  max-width: 410px;
   background: #fff;
-  box-shadow: 0 0 24px 0 rgba(0,0,0,0.18);
+  box-shadow: -2px 0 24px 0 rgba(0,0,0,0.18);
   display: flex;
   flex-direction: column;
   transform: translateX(100%);
   transition: transform 0.3s;
-  z-index: 50;
+  z-index: 1300;
   pointer-events: auto;
+  border-radius: 0 0 0 0;
+  margin-top: 0;
+  margin-bottom: 0;
 }
+
 .compras-sidebar.open {
   transform: translateX(0);
 }
+
 .compras-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1.5rem 1.5rem 1rem 1.5rem;
   border-bottom: 1px solid #e5e7eb;
+  position: relative;
+  background: #fff;
+  z-index: 2;
+  min-height: 72px;
+  border-radius: 0 0 0 0;
 }
+
+.compras-header-relative {
+  position: relative;
+}
+
 .compras-title {
   font-size: 1.25rem;
   font-weight: bold;
   color: #166534;
 }
+
 .compras-close {
   color: #4b5563;
   font-size: 2rem;
@@ -48,14 +68,24 @@
   cursor: pointer;
   transition: color 0.2s;
 }
+
+.compras-close-absolute {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+}
+
 .compras-close:hover {
   color: #dc2626;
 }
+
 .compras-content {
   flex: 1;
   overflow-y: auto;
   padding: 1.5rem;
+  background: #fff;
 }
+
 .compras-loading,
 .compras-error,
 .compras-vacio {
@@ -63,23 +93,41 @@
   padding: 2rem 0;
   color: #6b7280;
 }
+
 .compras-list {
   list-style: none;
   margin: 0 0 1rem 0;
   padding: 0;
   border-bottom: 1px solid #e5e7eb;
+  color: black;
 }
+
 .compras-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 0;
+  border-bottom: 1px solid #f3f4f6;
 }
+
+.compras-item:last-child {
+  border-bottom: none;
+}
+
+.compras-item-flexstart {
+  align-items: flex-start;
+}
+
+.compras-item-flex1 {
+  flex: 1;
+}
+
 .compras-actions {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
+
 .compras-btn {
   padding: 0.25rem 0.5rem;
   background: #e5e7eb;
@@ -88,16 +136,20 @@
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .compras-btn:hover {
   background: #d1fae5;
 }
+
 .compras-btn.eliminar {
   background: #ef4444;
   color: #fff;
 }
+
 .compras-btn.eliminar:hover {
   background: #dc2626;
 }
+
 .compras-total {
   display: flex;
   justify-content: space-between;
@@ -107,6 +159,7 @@
   font-size: 1.125rem;
   margin-bottom: 1rem;
 }
+
 .compras-pagar-btn {
   width: 100%;
   background: #166534;
@@ -118,6 +171,43 @@
   cursor: not-allowed;
   transition: background 0.2s;
 }
+
 .compras-pagar-btn:hover {
   background: #14532d;
+}
+
+.compras-footer {
+  flex: 0 0 auto;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+  padding: 1rem 1.5rem;
+  z-index: 2;
+  border-radius: 0 0 0 0;
+}
+
+.compras-input-cantidad {
+  border: 1px solid #d1d5db;
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  width: 3.5rem;
+  text-align: right;
+  font-size: 0.95em;
+  margin: 0 0.25rem;
+}
+
+/* Utilidades mínimas para clases usadas en el componente */
+.font-semibold {
+  font-weight: 600;
+}
+.ml-2 {
+  margin-left: 0.5rem;
+}
+.text-gray-500 {
+  color: #6b7280;
+}
+.text-xs {
+  font-size: 0.75rem;
+}
+.text-gray-700 {
+  color: #374151;
 }
