@@ -1,7 +1,5 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import YapeForm from "../pagos/YapeForm";
-import Modal from "react-modal";
 
 interface ProductoCarrito {
   producto_id: string;
@@ -48,8 +46,6 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
   const [editCantidad, setEditCantidad] = useState<{ [id: string]: string }>({});
   const [editPrecio, setEditPrecio] = useState<{ [id: string]: string }>({});
   const [preciosOriginales, setPreciosOriginales] = useState<{ [producto_id: string]: number }>({});
-  const [showPago, setShowPago] = useState(false);
-  const [pagoStatus, setPagoStatus] = useState<string | null>(null);
   const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   // Obtener o crear el carrito al abrir el modal
@@ -278,33 +274,6 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
     }, 0);
   };
 
-  // Maneja el token recibido desde el formulario Yape
-  const handleYapeToken = async (token: string) => {
-    setPagoStatus("procesando");
-    try {
-      // Calcula el total usando la función del footer fijo
-      const monto = calcularTotal();
-      const res = await fetch("/api/pagos/yape", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          token,
-          email: carrito?.cliente_id,
-          monto, // <-- usa el total calculado del footer fijo
-          descripcion: "Pago de carrito"
-        }),
-      });
-      const data = await res.json();
-      if (data.status === "approved") {
-        setPagoStatus("aprobado");
-      } else {
-        setPagoStatus("rechazado: " + (data.status_detail || "Error"));
-      }
-    } catch {
-      setPagoStatus("error");
-    }
-  };
-
   // Maneja el pago con Checkout Pro
   const handleCheckoutPro = async () => {
     const monto = calcularTotal();
@@ -486,40 +455,6 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
             Volver
           </button>
         </div>
-        {/* Modal de pago */}
-        <Modal
-          isOpen={showPago}
-          onRequestClose={() => {
-            setShowPago(false);
-            setPagoStatus(null);
-          }}
-          className="fixed inset-0 flex items-center justify-center z-[2000] bg-black bg-opacity-40"
-          overlayClassName="fixed inset-0 bg-black bg-opacity-40 z-[2000]"
-          ariaHideApp={false}
-          shouldCloseOnOverlayClick={false}
-          shouldCloseOnEsc={false}
-        >
-          <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full relative flex flex-col items-center">
-            <button
-              className="absolute top-3 right-4 text-2xl text-gray-400 hover:text-red-600 transition"
-              onClick={() => { setShowPago(false); setPagoStatus(null); }}
-              aria-label="Cerrar"
-            >×</button>
-            <h2 className="text-2xl font-bold mb-6 text-green-800 text-center">Pago con Yape</h2>
-            {pagoStatus === "aprobado" ? (
-              <div className="text-green-700 font-semibold text-center text-lg py-6">¡Pago exitoso!</div>
-            ) : pagoStatus && pagoStatus !== "procesando" ? (
-              <div className="text-red-600 font-semibold text-center text-lg py-6">Error: {pagoStatus}</div>
-            ) : (
-              <div className="w-full">
-                <YapeForm onToken={handleYapeToken} />
-              </div>
-            )}
-            {pagoStatus === "procesando" && (
-              <div className="text-center text-gray-500 mt-4">Procesando pago...</div>
-            )}
-          </div>
-        </Modal>
       </div>
     </div>
   );
