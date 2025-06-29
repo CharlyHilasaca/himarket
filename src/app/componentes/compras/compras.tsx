@@ -290,8 +290,8 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
       const data = await res.json();
       console.log("[Compras] Respuesta backend /pagos/checkoutpro:", data);
       // Redirige al usuario al sitio de pago de Mercado Pago usando init_point
-      if (data.init_point) {
-        window.location.href = data.init_point;
+      if (data.sandbox_init_point) {
+        window.location.href = data.sandbox_init_point;
       } else {
         alert("No se pudo iniciar el pago con Mercado Pago.");
       }
