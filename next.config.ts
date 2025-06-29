@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://proyectback-oc8o.onrender.com/api/:path*",
+        destination: "https://proyectback-9i2a.onrender.com/api/:path*",
       },
     ];
   },
