@@ -1,7 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import Footer from "../footer/Footer";
 import Image from "next/image";
+
+interface ProjectDetail {
+  proyectoId: string | number;
+  salePrice?: number;
+}
 
 interface Producto {
   _id: string;
@@ -11,6 +15,7 @@ interface Producto {
   image: string;
   categoryIds?: string[];
   salePrice?: number; // <-- Añadido para mostrar el precio por proyecto
+  projectDetails?: ProjectDetail[];
 }
 
 export default function Products({
@@ -26,6 +31,8 @@ export default function Products({
   const [productos, setProductos] = useState<Producto[]>([]);
   const [search, setSearch] = useState(initialSearch);
   const [filtered, setFiltered] = useState<Producto[]>([]);
+  const [page, setPage] = useState(0);
+  const pageSize = 16;
 
   useEffect(() => {
     let url = "/api/products";
@@ -34,12 +41,14 @@ export default function Products({
     }
     fetch(url)
       .then((res) => res.json())
-      .then((data) => {
+      .then((data: Producto[]) => {
         if (proyectoId) {
           setProductos(
-            data.map((prod: any) => {
+            data.map((prod: Producto) => {
               const projectDetail = Array.isArray(prod.projectDetails)
-                ? prod.projectDetails.find((pd: any) => String(pd.proyectoId) === String(proyectoId))
+                ? prod.projectDetails.find(
+                    (pd) => String(pd.proyectoId) === String(proyectoId)
+                  )
                 : undefined;
               return {
                 ...prod,
@@ -73,6 +82,14 @@ export default function Products({
     setSearch(initialSearch || "");
   }, [initialSearch, resetKey]);
 
+  // Paginación
+  const totalPages = Math.ceil(filtered.length / pageSize);
+  const paginated = filtered.slice(page * pageSize, (page + 1) * pageSize);
+
+  useEffect(() => {
+    if (page > 0 && page >= totalPages) setPage(0);
+  }, [search, totalPages, page]);
+
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
@@ -89,27 +106,54 @@ export default function Products({
             className="w-full max-w-xl px-4 py-2 rounded border border-green-300 focus:outline-none focus:ring-2 focus:ring-green-400 text-green-900 shadow"
           />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-          {filtered.map(prod => (
-            <div key={prod._id} className="bg-white rounded-lg shadow p-4 flex flex-col justify-between items-center h-[auto] min-h-[auto] cursor-pointer">
-              <div className="flex flex-col items-center w-full flex-1">
-                <div className="w-[100px] h-[100px] relative flex items-center justify-center">
-                  <Image
-                    src={prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`}
-                    alt={prod.name}
-                    fill
-                    style={{ objectFit: "contain" }}
-                  />
-                </div>
-                <h3 className="mt-2 font-bold text-green-900 text-center w-full min-h-[32px] flex items-center justify-center">{prod.name}</h3>
-                <span className="text-green-700 text-sm min-h-[20px] flex items-center justify-center w-full">{prod.marca || "\u00A0"}</span>
-              </div>
-              <div className="w-full flex items-end justify-center mt-2 min-h-[40px]">
-                <button className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-full max-w-[120px]">Agregar</button>
-              </div>
+        {filtered.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-8">
+            <p className="text-gray-600 mb-4">No se encontraron productos.</p>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-center mb-4 gap-4">
+              <button
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className="catalogo-flecha text-gray-800"
+              >
+                &#8592;
+              </button>
+              <span className="text-gray-800">
+                Página {page + 1} de {totalPages || 1}
+              </span>
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                className="catalogo-flechac text-gray-800"
+              >
+                &#8594;
+              </button>
             </div>
-          ))}
-        </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-6">
+              {paginated.map(prod => (
+                <div key={prod._id} className="bg-white rounded-lg shadow p-4 flex flex-col justify-between items-center h-[auto] min-h-[auto] cursor-pointer">
+                  <div className="flex flex-col items-center w-full flex-1">
+                    <div className="w-[100px] h-[100px] relative flex items-center justify-center">
+                      <Image
+                        src={prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`}
+                        alt={prod.name}
+                        fill
+                        style={{ objectFit: "contain" }}
+                      />
+                    </div>
+                    <h3 className="mt-2 font-bold text-green-900 text-center w-full min-h-[32px] flex items-center justify-center">{prod.name}</h3>
+                    <span className="text-green-700 text-sm min-h-[20px] flex items-center justify-center w-full">{prod.marca || "\u00A0"}</span>
+                  </div>
+                  <div className="w-full flex items-end justify-center mt-2 min-h-[40px]">
+                    <button className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-full max-w-[120px]">Agregar</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </main>
     </div>
   );

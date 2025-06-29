@@ -19,13 +19,7 @@ interface ModalVentaProps {
   onVenta: (venta: {
     estado: "pendiente" | "pagado";
     tipoPago: "efectivo";
-    nfac: string;
   }) => void;
-}
-
-function generarNfac(proyectoid: string) {
-  // Ejemplo simple: T<proyectoid>-<timestamp>
-  return `T${proyectoid}-${Date.now()}`;
 }
 
 export default function ModalVenta({
@@ -37,7 +31,6 @@ export default function ModalVenta({
   onVenta,
 }: ModalVentaProps) {
   const [tipoPago] = useState<"efectivo">("efectivo");
-  const nfac = generarNfac(proyectoid);
 
   if (!isOpen) return null;
 
@@ -51,7 +44,6 @@ export default function ModalVenta({
           </button>
         </div>
         <div className="modalventa-factura">
-          <p><b>N° Factura:</b> {nfac}</p>
           {cliente && (
             <>
               <p><b>Cliente:</b> {cliente.nombres} {cliente.apellidos}</p>
@@ -62,10 +54,10 @@ export default function ModalVenta({
           <p><b>Total:</b> S/ {total.toFixed(2)}</p>
         </div>
         <div className="modalventa-actions">
-          <button onClick={() => onVenta({ estado: "pendiente", tipoPago, nfac })}>
+          <button onClick={() => onVenta({ estado: "pendiente", tipoPago })}>
             Guardar como Pendiente
           </button>
-          <button onClick={() => onVenta({ estado: "pagado", tipoPago, nfac })}>
+          <button onClick={() => onVenta({ estado: "pagado", tipoPago })}>
             Guardar como Pagado
           </button>
           <button onClick={onClose}>Cancelar</button>

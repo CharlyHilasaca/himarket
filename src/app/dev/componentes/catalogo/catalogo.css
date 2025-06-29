@@ -1,9 +1,9 @@
 .catalogo-lista {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+  justify-items: center;
   margin-top: 16px;
-  justify-content: center; /* Centra horizontalmente las etiquetas */
   align-items: stretch;    /* Hace que todas tengan la misma altura */
 }
 
@@ -23,4 +23,20 @@
 .agregar-producto-btn:hover {
   background-color: #003d80;
   box-shadow: 0 4px 16px #0002;
+}
+
+.catalogo-flecha {
+  background: #e5e7eb;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1.5rem;
+  color: #047857;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.catalogo-flecha:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

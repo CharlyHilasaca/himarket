@@ -11,6 +11,7 @@ import Nuevos from "./componentes/nuevos/Nuevos";
 import Contacto from "./componentes/contacto/Contacto";
 import Footer from "./componentes/footer/Footer";
 import ProyectoModal from "./form/form";
+import Compras from "./componentes/compras/compras";
 
 export default function Home() {
   const [selected, setSelected] = useState("home");
@@ -21,8 +22,8 @@ export default function Home() {
   const [showRegister, setShowRegister] = useState(false);
   const [user, setUser] = useState<{ username: string; email: string } | null>(null);
   const [showProyectoModal, setShowProyectoModal] = useState(false);
-  const [customerData, setCustomerData] = useState<any>(null);
-  const [proyecto, setProyecto] = useState<any>(null);
+  const [proyecto, setProyecto] = useState<{ [key: string]: unknown } | null>(null);
+  const [showCarrito, setShowCarrito] = useState(false);
 
   // Cada vez que se cambia de sección, incrementa resetKey
   const handleSelect = (value: string) => {
@@ -37,7 +38,6 @@ export default function Home() {
       const res = await fetch("/api/clientes/customerData", { credentials: "include" });
       if (!res.ok) {
         setUser(null);
-        setCustomerData(null);
         setShowProyectoModal(false);
         setProyecto(null);
         return;
@@ -47,7 +47,6 @@ export default function Home() {
         username: data.customer?.username || data.customer?.email?.split("@")[0] || "Usuario",
         email: data.customer?.email || ""
       });
-      setCustomerData(data.customer);
       setProyecto(data.proyecto || null);
       // Mostrar modal si proyecto_f está vacío o null
       if (!data.customer?.proyecto_f) {
@@ -57,7 +56,6 @@ export default function Home() {
       }
     } catch {
       setUser(null);
-      setCustomerData(null);
       setShowProyectoModal(false);
       setProyecto(null);
     }
@@ -95,7 +93,7 @@ export default function Home() {
         productId={showProductDetail}
         onBack={() => setShowProductDetail(null)}
         user={user}
-        proyectoId={proyecto?.proyecto_id || null}
+        proyectoId={typeof proyecto?.proyecto_id === "number" ? proyecto.proyecto_id : null}
       />
     );
   } else if (selected === "home" || selected === "ofertas") {
@@ -109,7 +107,7 @@ export default function Home() {
       searchText={searchText}
       resetKey={resetKey}
       selectedSection={selected}
-      proyectoId={proyecto?.proyecto_id || null}
+      proyectoId={typeof proyecto?.proyecto_id === "number" ? proyecto.proyecto_id : null}
     />;
   } else if (selected === "productos") {
     content = (
@@ -118,7 +116,7 @@ export default function Home() {
           initialSearch={searchText}
           onProductClick={id => setShowProductDetail(id)}
           resetKey={resetKey}
-          proyectoId={proyecto?.proyecto_id || null}
+          proyectoId={typeof proyecto?.proyecto_id === "number" ? proyecto.proyecto_id : null}
         />
         <Footer />
       </>
@@ -164,8 +162,12 @@ export default function Home() {
         onRegister={() => setShowRegister(true)}
         user={user}
         onLogout={handleLogout}
-        proyectoNombre={proyecto?.nombre || null}
+        proyectoNombre={typeof proyecto?.nombre === "string" ? proyecto.nombre : null}
+        onCarritoClick={() => setShowCarrito(true)}
       />
+      {showCarrito && (
+        <Compras isOpen={showCarrito} onClose={() => setShowCarrito(false)} />
+      )}
       {showLogin && (
         <LoginOverlay
           onClose={() => setShowLogin(false)}

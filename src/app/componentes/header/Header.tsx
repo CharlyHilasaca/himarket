@@ -18,7 +18,8 @@ export default function Header({
   onRegister,
   user,
   onLogout,
-  proyectoNombre // <-- nuevo prop
+  proyectoNombre,
+  onCarritoClick // <-- nuevo prop
 }: {
   selected: string;
   onSelect: (value: string) => void;
@@ -27,6 +28,7 @@ export default function Header({
   user?: { username?: string, email?: string } | null;
   onLogout?: () => void;
   proyectoNombre?: string | null;
+  onCarritoClick?: () => void; // <-- nuevo prop
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -66,7 +68,14 @@ export default function Header({
       <div className="flex gap-4 items-center min-w-[160px] justify-end">
         {user ? (
           <>
-            <FaShoppingCart className="text-2xl text-white" />
+            <button
+              type="button"
+              onClick={onCarritoClick}
+              className="focus:outline-none"
+              title="Ver carrito de compras"
+            >
+              <FaShoppingCart className="text-2xl text-white" />
+            </button>
             <div className="relative" ref={menuRef}>
               <button onClick={() => setMenuOpen((v) => !v)} className="ml-2 flex items-center text-white font-semibold truncate max-w-[120px] focus:outline-none">
                 <span>

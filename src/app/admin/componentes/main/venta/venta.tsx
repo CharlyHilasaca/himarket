@@ -293,11 +293,11 @@ export default function Venta({ onClose }: VentaProps) {
   const handleGenerarVenta = async ({
     estado,
     tipoPago,
-    nfac,
+    // nfac, // Elimina este parámetro
   }: {
     estado: "pendiente" | "pagado";
     tipoPago: "efectivo" | "yape";
-    nfac: string;
+    // nfac: string; // Elimina este parámetro
   }) => {
     if (!proyectoid) return;
     if (estado === "pendiente" && !cliente) {
@@ -315,7 +315,7 @@ export default function Venta({ onClose }: VentaProps) {
       totalVenta,
       estado,
       tipoPago,
-      nfac,
+      // nfac, // Elimina esta línea
     };
     console.log("Venta body a enviar:", ventaBody);
 

@@ -3,6 +3,12 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Footer from "../../footer/Footer";
 
+interface ProjectDetail {
+  proyectoId: string | number;
+  salePrice?: number;
+  // Puedes agregar más campos si los necesitas
+}
+
 interface Producto {
   _id: string;
   name: string;
@@ -10,7 +16,7 @@ interface Producto {
   description?: string;
   image?: string;
   categoryIds?: string[];
-  projectDetails?: any[];
+  projectDetails?: ProjectDetail[];
 }
 
 interface ProductDetailOverlayProps {
@@ -49,7 +55,7 @@ export default function ProductDetailOverlay({
                     (prod) =>
                       Array.isArray(prod.projectDetails) &&
                       prod.projectDetails.some(
-                        (pd: any) => String(pd.proyectoId) === String(proyectoId)
+                        (pd: ProjectDetail) => String(pd.proyectoId) === String(proyectoId)
                       )
                   )
                 : productosRelacionados;
@@ -68,7 +74,7 @@ export default function ProductDetailOverlay({
     Array.isArray(producto.projectDetails)
   ) {
     const detail = producto.projectDetails.find(
-      (pd: any) => String(pd.proyectoId) === String(proyectoId)
+      (pd: ProjectDetail) => String(pd.proyectoId) === String(proyectoId)
     );
     if (detail && detail.salePrice !== undefined) {
       salePrice = `S/ ${detail.salePrice}`;
