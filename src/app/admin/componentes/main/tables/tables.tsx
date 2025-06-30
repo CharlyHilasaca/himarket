@@ -140,9 +140,16 @@ export default function Tables() {
             {historialData.map((row, idx) => (
               <tr
                 key={row._id || idx}
-                className={`${idx % 2 === 1 ? "bg-gray-100" : ""} ${row.estado === "para entrega" ? "cursor-pointer" : "cursor-default"}`}
+                className={`${idx % 2 === 1 ? "bg-gray-100" : ""} ${
+                  row.estado === "para entrega" || row.estado === "pagado"
+                    ? "cursor-pointer"
+                    : "cursor-default"
+                }`}
                 onClick={() => {
-                  if (row.estado === "para entrega" && row._id) {
+                  if (
+                    (row.estado === "para entrega" || row.estado === "pagado") &&
+                    row._id
+                  ) {
                     setSelectedVentaId(row._id);
                   }
                 }}
