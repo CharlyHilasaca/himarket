@@ -30,11 +30,6 @@ interface ProductoMasVendido {
   cantidadVendida: number;
 }
 
-function fillRows<T>(data: T[], min: number, max: number): (T | null)[] {
-  const length = Math.max(min, Math.min(data.length, max));
-  return Array.from({ length }, (_, i) => data[i] ?? null);
-}
-
 export default function Tables() {
   const [historialData, setHistorialData] = useState<VentaHistorial[]>([]);
   const [bajoStock, setBajoStock] = useState<ProductoBajoStock[]>([]);
@@ -96,8 +91,6 @@ export default function Tables() {
     fetchMasVendidos();
   }, []);
 
-  const historialRows = fillRows(historialData, 8, 8);
-
   // Refresca ventas después de actualizar estado
   const refreshVentas = async () => {
     try {
@@ -135,7 +128,7 @@ export default function Tables() {
       {/* Tabla principal: Historial de Ventas */}
       <div className="bg-white p-4 rounded shadow-md h-[500px] col-start-1 col-end-2 row-start-1 row-end-5">
         <table className="w-full border-collapse">
-            <thead>
+          <thead>
             <tr>
               <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Fecha</th>
               <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle w-full max-w-full">Ventas</th>
@@ -144,12 +137,12 @@ export default function Tables() {
             </tr>
           </thead>
           <tbody>
-            {historialRows.map((row, idx) => (
+            {historialData.map((row, idx) => (
               <tr
-                key={idx}
-                className={`${idx % 2 === 1 ? "bg-gray-100" : ""} ${row && row.estado === "para entrega" ? "cursor-pointer" : "cursor-default"}`}
+                key={row._id || idx}
+                className={`${idx % 2 === 1 ? "bg-gray-100" : ""} ${row.estado === "para entrega" ? "cursor-pointer" : "cursor-default"}`}
                 onClick={() => {
-                  if (row && row.estado === "para entrega" && row._id) {
+                  if (row.estado === "para entrega" && row._id) {
                     setSelectedVentaId(row._id);
                   }
                 }}
