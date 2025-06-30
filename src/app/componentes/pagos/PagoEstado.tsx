@@ -1,7 +1,9 @@
 "use client";
-import React, { JSX } from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
+import type { JSX } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import Header from "../header/Header";
+import Footer from "../footer/Footer";
 
 const estados: Record<string, {
   color: string;
@@ -57,7 +59,7 @@ export default function PagoEstado() {
     if (estado) {
       const timer = setTimeout(() => {
         router.push("/");
-      }, 6000);
+      }, 5000); // 5 segundos
       return () => clearTimeout(timer);
     }
   }, [estado, router]);
@@ -65,18 +67,27 @@ export default function PagoEstado() {
   if (!estado) return null;
 
   return (
-    <div className={`flex flex-col items-center justify-center min-h-[80vh] ${estado.bg}`}>
-      <div className="bg-white rounded-xl shadow-lg px-10 py-12 flex flex-col items-center max-w-lg w-full">
-        {estado.icon}
-        <h2 className={`text-3xl font-bold mb-2 ${estado.color}`}>{estado.titulo}</h2>
-        <p className="text-lg text-gray-700 mb-8 text-center">{estado.mensaje}</p>
-        <button
-          className="bg-green-700 text-white px-8 py-3 rounded font-semibold hover:bg-green-800 transition text-lg"
-          onClick={() => router.push("/")}
-        >
-          Volver al inicio
-        </button>
-      </div>
+    <div className="min-h-screen flex flex-col bg-white">
+      <Header
+        selected="home"
+        onSelect={() => router.push("/")}
+        carritoCantidad={0}
+      />
+      <main className={`flex flex-1 flex-col items-center justify-center ${estado.bg}`}>
+        <div className="bg-white rounded-xl shadow-lg px-10 py-12 flex flex-col items-center max-w-lg w-full mt-10 mb-10">
+          {estado.icon}
+          <h2 className={`text-3xl font-bold mb-2 ${estado.color}`}>{estado.titulo}</h2>
+          <p className="text-lg text-gray-700 mb-8 text-center">{estado.mensaje}</p>
+          <button
+            className="bg-green-700 text-white px-8 py-3 rounded font-semibold hover:bg-green-800 transition text-lg"
+            onClick={() => router.push("/")}
+          >
+            Volver al inicio
+          </button>
+          <span className="text-xs text-gray-400 mt-4">Serás redirigido automáticamente en unos segundos...</span>
+        </div>
+      </main>
+      <Footer />
     </div>
   );
 }
