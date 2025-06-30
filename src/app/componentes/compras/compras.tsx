@@ -47,6 +47,10 @@ interface HistorialVenta {
   tipoPago?: string;
 }
 
+interface ProductoNombreMap {
+  [id: string]: string;
+}
+
 export default function Compras({ isOpen, onClose }: ComprasProps) {
   const [carrito, setCarrito] = useState<Carrito | null>(null);
   const [loading, setLoading] = useState(true);
@@ -58,6 +62,8 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
   const [preciosOriginales, setPreciosOriginales] = useState<{ [producto_id: string]: number }>({});
   const [historial, setHistorial] = useState<HistorialVenta[]>([]);
   const [loadingHistorial, setLoadingHistorial] = useState(true);
+  const [productoNombres, setProductoNombres] = useState<ProductoNombreMap>({});
+  const [expandedVentas, setExpandedVentas] = useState<{ [ventaId: string]: boolean }>({});
   const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   // Obtener o crear el carrito al abrir el modal
@@ -131,6 +137,27 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
       .catch(() => setHistorial([]))
       .finally(() => setLoadingHistorial(false));
   }, [isOpen]);
+
+  // Obtener nombres de productos para el historial (solo una vez por sesión del modal)
+  useEffect(() => {
+    if (!isOpen) return;
+    // Junta todos los ids de productos del historial
+    const ids = new Set<string>();
+    historial.forEach(venta => {
+      venta.items.forEach(item => ids.add(item.producto));
+    });
+    if (ids.size === 0) return;
+    // Pide todos los productos por id (puedes optimizar con un endpoint batch si tienes muchos)
+    Promise.all(Array.from(ids).map(id =>
+      fetch(`/api/products/${id}`).then(res => res.ok ? res.json() : null)
+    )).then(results => {
+      const map: ProductoNombreMap = {};
+      results.forEach(prod => {
+        if (prod && prod._id) map[prod._id] = prod.name;
+      });
+      setProductoNombres(map);
+    });
+  }, [isOpen, historial]);
 
   // Actualizar el carrito en el backend
   const actualizarCarrito = async (productos: ProductoCarrito[]) => {
@@ -504,30 +531,47 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
                 <div className="text-center py-8 text-gray-400">No tienes compras registradas.</div>
               ) : (
                 <ul className="list-none m-0 p-0 text-black">
-                  {historial.map((venta) => (
-                    <li key={venta._id} className="mb-4 pb-2 border-b border-gray-100">
-                      <div className="flex justify-between items-center">
-                        <span className="font-semibold text-green-800">{venta.nfac}</span>
-                        <span className="text-xs text-gray-500">{new Date(venta.createdAt).toLocaleDateString()}</span>
-                      </div>
-                      <div className="text-sm text-gray-700 mb-1">
-                        Estado: <span className="font-semibold">{venta.estado}</span>
-                        {venta.tipoPago && (
-                          <span className="ml-2 text-gray-500">({venta.tipoPago})</span>
+                  {historial.map((venta) => {
+                    const expanded = expandedVentas[venta._id];
+                    const mostrarItems = expanded ? venta.items : venta.items.slice(0, 1);
+                    return (
+                      <li key={venta._id} className="mb-4 pb-2 border-b border-gray-100">
+                        <div className="flex justify-between items-center">
+                          <span className="font-semibold text-green-800">{venta.nfac}</span>
+                          <span className="text-xs text-gray-500">{new Date(venta.createdAt).toLocaleDateString()}</span>
+                        </div>
+                        <div className="text-sm text-gray-700 mb-1">
+                          Estado: <span className="font-semibold">{venta.estado}</span>
+                          {venta.tipoPago && (
+                            <span className="ml-2 text-gray-500">({venta.tipoPago})</span>
+                          )}
+                        </div>
+                        <div className="text-sm text-gray-700 mb-1">
+                          Total: <span className="font-semibold">S/ {venta.totalVenta.toFixed(2)}</span>
+                        </div>
+                        <ul className="ml-4 text-xs text-gray-600">
+                          {mostrarItems.map((item, idx) => (
+                            <li key={idx}>
+                              {item.cantidad} x {productoNombres[item.producto] || item.producto} - S/ {item.precio}
+                            </li>
+                          ))}
+                        </ul>
+                        {venta.items.length > 1 && (
+                          <button
+                            className="text-green-700 text-xs mt-1 underline hover:text-green-900"
+                            onClick={() =>
+                              setExpandedVentas(prev => ({
+                                ...prev,
+                                [venta._id]: !expanded
+                              }))
+                            }
+                          >
+                            {expanded ? "Ver menos" : `Ver más (${venta.items.length - 1} más)`}
+                          </button>
                         )}
-                      </div>
-                      <div className="text-sm text-gray-700 mb-1">
-                        Total: <span className="font-semibold">S/ {venta.totalVenta.toFixed(2)}</span>
-                      </div>
-                      <ul className="ml-4 text-xs text-gray-600">
-                        {venta.items.map((item, idx) => (
-                          <li key={idx}>
-                            {item.cantidad} x {item.producto} - S/ {item.precio}
-                          </li>
-                        ))}
-                      </ul>
-                    </li>
-                  ))}
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </div>
