@@ -109,14 +109,14 @@ export default function Tables() {
     <section className="grid grid-cols-[2fr_1fr] gap-4 p-4">
       {/* Overlay para cambiar estado */}
       {selectedVentaId && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded shadow-lg">
+        <div className="fixed inset-0 bg-[rgba(0,0,0,0.15)] flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-xl shadow-2xl min-w-[340px] flex flex-col items-center">
             <CambiarEstado
               ventaId={selectedVentaId}
               onEstadoActualizado={refreshVentas}
             />
             <button
-              className="mt-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              className="mt-6 px-5 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition font-semibold"
               onClick={() => setSelectedVentaId(null)}
             >
               Cerrar

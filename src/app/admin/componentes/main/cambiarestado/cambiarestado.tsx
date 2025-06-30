@@ -35,21 +35,24 @@ export default function CambiarEstado({ ventaId, onEstadoActualizado }: CambiarE
   };
 
   return (
-    <div className="flex gap-2">
-      <button
-        className="bg-green-700 text-white px-3 py-1 rounded hover:bg-green-800"
-        disabled={loading}
-        onClick={() => actualizarEstado("entregado")}
-      >
-        Marcar como Entregado
-      </button>
-      <button
-        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-        disabled={loading}
-        onClick={() => actualizarEstado("cancelado")}
-      >
-        Cancelar Venta
-      </button>
+    <div className="flex flex-col items-center gap-4">
+      <h3 className="text-xl font-semibold text-gray-800 mb-2">Cambiar estado de la venta</h3>
+      <div className="flex gap-3">
+        <button
+          className="bg-green-600 text-white px-5 py-2 rounded shadow hover:bg-green-700 transition font-semibold"
+          disabled={loading}
+          onClick={() => actualizarEstado("entregado")}
+        >
+          Marcar como Entregado
+        </button>
+        <button
+          className="bg-red-600 text-white px-5 py-2 rounded shadow hover:bg-red-700 transition font-semibold"
+          disabled={loading}
+          onClick={() => actualizarEstado("cancelado")}
+        >
+          Cancelar Venta
+        </button>
+      </div>
     </div>
   );
 }
