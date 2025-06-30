@@ -127,44 +127,46 @@ export default function Tables() {
 
       {/* Tabla principal: Historial de Ventas */}
       <div className="bg-white p-4 rounded shadow-md h-[500px] col-start-1 col-end-2 row-start-1 row-end-5">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Fecha</th>
-              <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle w-full max-w-full">Ventas</th>
-              <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Total</th>
-              <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Método de pago</th>
-            </tr>
-          </thead>
-          <tbody>
-            {historialData.map((row, idx) => (
-              <tr
-                key={row._id || idx}
-                className={`${idx % 2 === 1 ? "bg-gray-100" : ""} ${
-                  row.estado === "para entrega" || row.estado === "pagado"
-                    ? "cursor-pointer"
-                    : "cursor-default"
-                }`}
-                onClick={() => {
-                  if (
-                    (row.estado === "para entrega" || row.estado === "pagado") &&
-                    row._id
-                  ) {
-                    setSelectedVentaId(row._id);
-                  }
-                }}
-              >
-                <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row ? new Date(row.createdAt).toLocaleDateString() : ""}</td>
-                <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black w-full max-w-full overflow-hidden text-ellipsis">
-                  <span className="block leading-tight text-sm text-gray-800">{row?.cliente || ''} {row?.apellidos || ''}</span>
-                  <span className="block text-xs text-gray-500">{row?.nfac ?? ""}</span>
-                </td>
-                <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row ? `S/.${row.totalVenta.toFixed(2)}` : ""}</td>
-                <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row?.tipoPago ? `${row.tipoPago} (${row.estado})` : (row?.estado ? `(${row.estado})` : "")}</td>
+        <div className="w-full h-full overflow-x-auto overflow-y-auto max-h-[440px]">
+          <table className="w-full min-w-[700px] border-collapse">
+            <thead>
+              <tr>
+                <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Fecha</th>
+                <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle w-full max-w-full">Ventas</th>
+                <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Total</th>
+                <th className="bg-[#2D8F2F] text-white border border-gray-300 p-2 text-left h-12 align-middle whitespace-nowrap w-auto">Método de pago</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {historialData.map((row, idx) => (
+                <tr
+                  key={row._id || idx}
+                  className={`${idx % 2 === 1 ? "bg-gray-100" : ""} ${
+                    row.estado === "para entrega" || row.estado === "pagado"
+                      ? "cursor-pointer"
+                      : "cursor-default"
+                  }`}
+                  onClick={() => {
+                    if (
+                      (row.estado === "para entrega" || row.estado === "pagado") &&
+                      row._id
+                    ) {
+                      setSelectedVentaId(row._id);
+                    }
+                  }}
+                >
+                  <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row ? new Date(row.createdAt).toLocaleDateString() : ""}</td>
+                  <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black w-full max-w-full overflow-hidden text-ellipsis">
+                    <span className="block leading-tight text-sm text-gray-800">{row?.cliente || ''} {row?.apellidos || ''}</span>
+                    <span className="block text-xs text-gray-500">{row?.nfac ?? ""}</span>
+                  </td>
+                  <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row ? `S/.${row.totalVenta.toFixed(2)}` : ""}</td>
+                  <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row?.tipoPago ? `${row.tipoPago} (${row.estado})` : (row?.estado ? `(${row.estado})` : "")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Tabla secundaria: Productos de Bajo Stock */}
