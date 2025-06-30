@@ -21,17 +21,18 @@ export default function CambiarEstado({ ventaId, onEstadoActualizado }: CambiarE
         credentials: "include",
         body: JSON.stringify({ nuevoEstado, reponerStock }),
       });
+      setLoading(false);
       if (res.ok) {
-        alert("Estado actualizado correctamente");
-        onEstadoActualizado();
+        onEstadoActualizado(); // Cierra el modal y refresca la tabla
+        return;
       } else {
         const data = await res.json();
         alert(data.message || "Error al actualizar el estado");
       }
     } catch {
       alert("Error de red al actualizar el estado");
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
