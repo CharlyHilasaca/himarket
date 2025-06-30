@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import Image from 'next/image';
+import CambiarEstado from "../cambiarestado/cambiarestado";
 
 interface VentaHistorial {
+  _id?: string;
   createdAt: string;
   nfac: string;
   totalVenta: number;
@@ -39,6 +41,7 @@ export default function Tables() {
   const [masVendidos, setMasVendidos] = useState<ProductoMasVendido[]>([]);
   const [bajoStockLoading, setBajoStockLoading] = useState(true);
   const [masVendidosLoading, setMasVendidosLoading] = useState(true);
+  const [selectedVentaId, setSelectedVentaId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchVentas = async () => {
@@ -95,8 +98,40 @@ export default function Tables() {
 
   const historialRows = fillRows(historialData, 8, 8);
 
+  // Refresca ventas después de actualizar estado
+  const refreshVentas = async () => {
+    try {
+      const res = await fetch('/api/ventas', { credentials: 'include' });
+      if (res.ok) {
+        const data = await res.json();
+        setHistorialData(data);
+      }
+    } catch {
+      setHistorialData([]);
+    }
+    setSelectedVentaId(null);
+  };
+
   return (
     <section className="grid grid-cols-[2fr_1fr] gap-4 p-4">
+      {/* Overlay para cambiar estado */}
+      {selectedVentaId && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg">
+            <CambiarEstado
+              ventaId={selectedVentaId}
+              onEstadoActualizado={refreshVentas}
+            />
+            <button
+              className="mt-4 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              onClick={() => setSelectedVentaId(null)}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Tabla principal: Historial de Ventas */}
       <div className="bg-white p-4 rounded shadow-md h-[500px] col-start-1 col-end-2 row-start-1 row-end-5">
         <table className="w-full border-collapse">
@@ -110,7 +145,15 @@ export default function Tables() {
           </thead>
           <tbody>
             {historialRows.map((row, idx) => (
-              <tr key={idx} className={idx % 2 === 1 ? "bg-gray-100" : ""}>
+              <tr
+                key={idx}
+                className={`${idx % 2 === 1 ? "bg-gray-100" : ""} ${row && row.estado === "para entrega" ? "cursor-pointer" : "cursor-default"}`}
+                onClick={() => {
+                  if (row && row.estado === "para entrega" && row._id) {
+                    setSelectedVentaId(row._id);
+                  }
+                }}
+              >
                 <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black whitespace-nowrap w-auto">{row ? new Date(row.createdAt).toLocaleDateString() : ""}</td>
                 <td className="border border-gray-300 p-2 text-left h-12 align-middle text-black w-full max-w-full overflow-hidden text-ellipsis">
                   <span className="block leading-tight text-sm text-gray-800">{row?.cliente || ''} {row?.apellidos || ''}</span>
