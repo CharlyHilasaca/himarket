@@ -366,7 +366,7 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
 
   return (
     <div ref={sidebarRef} className="w-full min-h-screen flex flex-col items-center justify-start bg-white">
-      <div className="w-full max-w-4xl mx-auto flex flex-col bg-white rounded-lg shadow-lg mt-8 mb-8 border border-gray-200">
+      <div className="w-full max-w-6xl mx-auto flex flex-col bg-white rounded-lg shadow-lg mt-8 mb-8 border border-gray-200">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200 bg-white min-h-[72px] relative z-10 rounded-t-lg">
           <h2 className="text-2xl font-bold text-green-800">Carrito e Historial</h2>
@@ -377,11 +377,11 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
           >×</button>
         </div>
         {/* Contenedores */}
-        <div className="flex flex-row gap-6 px-6 py-6 bg-white">
+        <div className="flex flex-row gap-8 px-8 py-8 bg-white">
           {/* Carrito de compras */}
-          <div className="flex-1 flex flex-col min-w-[320px] max-w-[480px]">
+          <div className="flex-1 flex flex-col min-w-[380px] max-w-[600px]">
             <h3 className="text-lg font-semibold text-green-700 mb-2">Carrito de Compras</h3>
-            <div className="flex-1 overflow-y-auto max-h-[340px] border rounded bg-white shadow-inner p-2">
+            <div className="flex-1 overflow-y-auto max-h-[480px] border rounded bg-white shadow-inner p-2">
               {loading ? (
                 <div className="text-center py-8 text-gray-400">Cargando...</div>
               ) : error ? (
@@ -522,9 +522,9 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
             </div>
           </div>
           {/* Historial de compras */}
-          <div className="flex-1 flex flex-col min-w-[320px] max-w-[480px]">
+          <div className="flex-1 flex flex-col min-w-[380px] max-w-[600px]">
             <h3 className="text-lg font-semibold text-green-700 mb-2">Historial de Compras</h3>
-            <div className="flex-1 overflow-y-auto max-h-[340px] border rounded bg-white shadow-inner p-2">
+            <div className="flex-1 overflow-y-auto max-h-[480px] border rounded bg-white shadow-inner p-2">
               {loadingHistorial ? (
                 <div className="text-center py-8 text-gray-400">Cargando historial...</div>
               ) : historial.length === 0 ? (
