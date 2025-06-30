@@ -26,11 +26,16 @@ export default function Home() {
   const [showCarrito, setShowCarrito] = useState(false);
   const [carritoCantidad, setCarritoCantidad] = useState(0);
 
-  // Cada vez que se cambia de sección, incrementa resetKey
+  // Cada vez que se cambia de sección, incrementa resetKey y cierra overlays
   const handleSelect = (value: string) => {
     setSelected(value);
     setResetKey(k => k + 1);
     setSearchText("");
+    setShowProductDetail(null);
+    setShowCarrito(false);
+    setShowLogin(false);
+    setShowRegister(false);
+    // Si tienes otros overlays, ciérralos aquí también
   };
 
   // Función para obtener datos del usuario autenticado
