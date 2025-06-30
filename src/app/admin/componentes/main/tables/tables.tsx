@@ -207,16 +207,25 @@ export default function Tables() {
           <ul className="list-none p-0 text-black">
             {masVendidos.map((item) => (
               <li key={item._id} className="flex items-center justify-between my-2 px-2">
-                <span>{item.name}{item.marca ? ` (${item.marca})` : ""} - Vendidos: {item.cantidadVendida.toFixed(2)}</span>
-                {item.image && (
-                  <Image
-                    src={`/masvendido.png`}
-                    alt={item.name}
-                    width={24}
-                    height={24}
-                    className="ml-4 w-6 h-6 object-contain"
-                  />
-                )}
+                <div className="flex items-center gap-3 w-full">
+                  {item.image && (
+                    <Image
+                      src={`/masvendido.png`}
+                      alt={item.name}
+                      width={24}
+                      height={24}
+                      className="w-6 h-6 object-contain"
+                    />
+                  )}
+                  <div className="flex flex-col">
+                    <span className="font-semibold text-green-900">
+                      {item.name}{item.marca ? ` (${item.marca})` : ""}
+                    </span>
+                    <span className="text-sm text-gray-700">
+                      Vendidos: {item.cantidadVendida.toFixed(2)}
+                    </span>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
