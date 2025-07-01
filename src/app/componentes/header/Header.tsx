@@ -107,8 +107,18 @@ export default function Header({
               )}
             </button>
             <div className="relative" ref={menuRef}>
-              <button onClick={() => setMenuOpen((v) => !v)} className="ml-2 flex items-center text-white font-semibold truncate max-w-[120px] focus:outline-none">
-                <span>
+              <button
+                onClick={() => setMenuOpen((v) => !v)}
+                className="ml-2 flex items-center text-white font-semibold truncate focus:outline-none header-user-btn"
+              >
+                <span
+                  className="truncate max-w-[160px] inline-block align-middle"
+                  title={
+                    user.username
+                      ? user.username
+                      : (user.email ? user.email.split("@")[0] : "")
+                  }
+                >
                   {user.username
                     ? user.username
                     : (user.email ? user.email.split("@")[0] : "")}
