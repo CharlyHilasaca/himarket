@@ -84,10 +84,10 @@ export default function ProductDetailOverlay({
   return (
     <>
       <div className="w-full flex-1 flex justify-center items-start bg-transparent">
-        <div className="w-full max-w-5xl flex bg-white rounded-xl shadow-lg mt-8 mb-8 relative min-h-[400px]">
+        <div className="w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-xl shadow-lg mt-8 mb-8 relative min-h-[400px]">
           <button onClick={onBack} className="absolute top-4 left-4 bg-green-700 text-white px-3 py-1 rounded z-10">Volver</button>
-          {/* Lado izquierdo */}
-          <div className="flex-1 p-8 flex flex-col items-center border-r border-gray-200 min-h-[400px] max-h-[600px]">
+          {/* Lado izquierdo: Producto principal */}
+          <div className="w-full md:w-1/2 p-8 flex flex-col items-center border-b md:border-b-0 md:border-r border-gray-200 min-h-[400px] max-h-[600px]">
             {producto ? (
               <>
                 <div className="w-[160px] h-[160px] relative flex items-center justify-center">
@@ -115,14 +115,14 @@ export default function ProductDetailOverlay({
               </>
             ) : <div>Cargando...</div>}
           </div>
-          {/* Lado derecho */}
-          <div className="flex-1 p-8 flex flex-col gap-3 min-h-[400px] max-h-[600px] overflow-y-auto">
+          {/* Lado derecho: Productos relacionados */}
+          <div className="w-full md:w-1/2 p-8 flex flex-col gap-3 min-h-[400px] max-h-[600px] overflow-y-auto">
             <h3 className="text-lg font-bold text-green-800 mb-2">Productos de la misma categoría</h3>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-row flex-wrap gap-2 md:flex-col">
               {relacionados.filter(p => p._id !== selectedProductId).map(prod => (
                 <button
                   key={prod._id}
-                  className="bg-gray-100 rounded-full px-4 py-2 flex items-center gap-2 min-w-[180px] hover:bg-green-100 transition"
+                  className="bg-gray-100 rounded-full px-4 py-2 flex items-center gap-2 min-w-[140px] hover:bg-green-100 transition"
                   onClick={() => setSelectedProductId(prod._id)}
                 >
                   <Image src={prod.image ? (prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`) : "/placeholder.webp"} alt={prod.name || "Producto relacionado"} width={32} height={32} />
