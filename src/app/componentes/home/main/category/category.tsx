@@ -35,19 +35,30 @@ export default function Category({
 
   const allCategorias = [{ _id: "all", name: "Todos" }, ...categorias];
 
+  // Scroll infinito: si llegas al inicio y presionas prev, va al final; si llegas al final y presionas next, va al inicio.
   const handlePrev = () => {
     setAnimDirection("left");
     setTimeout(() => {
-      setStartIdx((prev) => Math.max(0, prev - 1));
+      setStartIdx((prev) => {
+        if (prev === 0) {
+          // Ir al final
+          return Math.max(allCategorias.length - visibleCount, 0);
+        }
+        return prev - 1;
+      });
       setAnimDirection(null);
     }, 180);
   };
   const handleNext = () => {
     setAnimDirection("right");
     setTimeout(() => {
-      setStartIdx((prev) =>
-        prev + visibleCount < allCategorias.length ? prev + 1 : prev
-      );
+      setStartIdx((prev) => {
+        if (prev + visibleCount >= allCategorias.length) {
+          // Ir al inicio
+          return 0;
+        }
+        return prev + 1;
+      });
       setAnimDirection(null);
     }, 180);
   };
@@ -59,12 +70,21 @@ export default function Category({
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartX.current === null) return;
     const delta = e.changedTouches[0].clientX - touchStartX.current;
-    if (delta > 40 && startIdx > 0) handlePrev();
-    else if (delta < -40 && startIdx + visibleCount < allCategorias.length) handleNext();
+    if (delta > 40) handlePrev();
+    else if (delta < -40) handleNext();
     touchStartX.current = null;
   };
 
-  const visibleCategorias = allCategorias.slice(startIdx, startIdx + visibleCount);
+  const visibleCategorias = (() => {
+    // Si hay menos categorías que visibleCount, muestra todas
+    if (allCategorias.length <= visibleCount) return allCategorias;
+    // Si el scroll llega al final, muestra desde el principio (scroll infinito)
+    let idxs = [];
+    for (let i = 0; i < visibleCount; i++) {
+      idxs.push((startIdx + i) % allCategorias.length);
+    }
+    return idxs.map(i => allCategorias[i]);
+  })();
 
   // Animación de desplazamiento con Tailwind
   const animClass =
@@ -87,12 +107,11 @@ export default function Category({
           type="button"
           onClick={handlePrev}
           className={`
-            p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
+            p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100
             transition-all duration-200
             flex-shrink-0
           `}
           aria-label="Anterior"
-          disabled={startIdx === 0}
         >
           <FaChevronLeft />
         </button>
@@ -138,12 +157,11 @@ export default function Category({
           type="button"
           onClick={handleNext}
           className={`
-            p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
+            p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100
             transition-all duration-200
             flex-shrink-0
           `}
           aria-label="Siguiente"
-          disabled={startIdx + visibleCount >= allCategorias.length}
         >
           <FaChevronRight />
         </button>
