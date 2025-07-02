@@ -64,6 +64,7 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
   const [loadingHistorial, setLoadingHistorial] = useState(true);
   const [productoNombres, setProductoNombres] = useState<ProductoNombreMap>({});
   const [expandedVentas, setExpandedVentas] = useState<{ [ventaId: string]: boolean }>({});
+  const [tab, setTab] = useState<"carrito" | "historial">("carrito");
   const sidebarRef = React.useRef<HTMLDivElement>(null);
 
   // Obtener o crear el carrito al abrir el modal
@@ -366,216 +367,235 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
 
   return (
     <div ref={sidebarRef} className="w-full min-h-screen flex flex-col items-center justify-start bg-white">
-      <div className="w-full max-w-6xl mx-auto flex flex-col bg-white rounded-lg shadow-lg mt-8 mb-8 border border-gray-200">
+      <div className="w-full max-w-lg sm:max-w-2xl mx-auto flex flex-col bg-white rounded-lg shadow-lg mt-8 mb-8 border border-gray-200">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-200 bg-white min-h-[72px] relative z-10 rounded-t-lg">
-          <h2 className="text-2xl font-bold text-green-800">Carrito e Historial</h2>
+        <div className="flex items-center justify-between px-4 pt-6 pb-4 border-b border-gray-200 bg-white min-h-[56px] relative z-10 rounded-t-lg">
+          <h2 className="text-xl sm:text-2xl font-bold text-green-800">Carrito e Historial</h2>
           <button
             className="text-2xl text-gray-400 hover:text-red-600 transition"
             onClick={onClose}
             aria-label="Volver"
           >×</button>
         </div>
-        {/* Contenedores */}
-        <div className="flex flex-row gap-8 px-8 py-8 bg-white">
-          {/* Carrito de compras */}
-          <div className="flex-1 flex flex-col min-w-[380px] max-w-[600px]">
-            <h3 className="text-lg font-semibold text-green-700 mb-2">Carrito de Compras</h3>
-            <div className="flex-1 overflow-y-auto max-h-[480px] border rounded bg-white shadow-inner p-2">
-              {loading ? (
-                <div className="text-center py-8 text-gray-400">Cargando...</div>
-              ) : error ? (
-                <div className="text-center py-8 text-gray-400">{error}</div>
-              ) : carrito && carrito.productos.length > 0 ? (
-                <ul className="list-none m-0 mb-4 p-0 border-b border-gray-200 text-black">
-                  {carrito.productos.map((prod) => {
-                    let unidadAbrev = "";
-                    const stock = typeof prod.stock === "number" ? prod.stock : 999999;
-                    if (prod.unidad && unidades.length > 0) {
-                      const unidadObj = unidades.find(u => u._id === prod.unidad);
-                      if (unidadObj) unidadAbrev = unidadObj.abbreviation;
-                    }
-                    const isDecimal = esUnidadDecimal(prod.unidad);
-                    const precioUnit = preciosOriginales[prod.producto_id] ?? prod.precio;
+        {/* Tabs */}
+        <div className="flex w-full border-b border-gray-200 bg-white">
+          <button
+            className={`flex-1 py-2 text-center font-semibold transition ${tab === "carrito" ? "text-green-700 border-b-2 border-green-700 bg-green-50" : "text-gray-500 hover:text-green-700"}`}
+            onClick={() => setTab("carrito")}
+            type="button"
+          >
+            Carrito de Compras
+          </button>
+          <button
+            className={`flex-1 py-2 text-center font-semibold transition ${tab === "historial" ? "text-green-700 border-b-2 border-green-700 bg-green-50" : "text-gray-500 hover:text-green-700"}`}
+            onClick={() => setTab("historial")}
+            type="button"
+          >
+            Historial de Compras
+          </button>
+        </div>
+        {/* Contenido */}
+        <div className="flex-1 flex flex-col px-2 sm:px-8 py-4 sm:py-8 bg-white min-h-[400px]">
+          {tab === "carrito" && (
+            <div className="flex flex-col flex-1 min-w-0">
+              {/* Carrito de compras */}
+              <div className="flex-1 overflow-y-auto max-h-[380px] border rounded bg-white shadow-inner p-2">
+                {loading ? (
+                  <div className="text-center py-8 text-gray-400">Cargando...</div>
+                ) : error ? (
+                  <div className="text-center py-8 text-gray-400">{error}</div>
+                ) : carrito && carrito.productos.length > 0 ? (
+                  <ul className="list-none m-0 mb-4 p-0 border-b border-gray-200 text-black">
+                    {carrito.productos.map((prod) => {
+                      let unidadAbrev = "";
+                      const stock = typeof prod.stock === "number" ? prod.stock : 999999;
+                      if (prod.unidad && unidades.length > 0) {
+                        const unidadObj = unidades.find(u => u._id === prod.unidad);
+                        if (unidadObj) unidadAbrev = unidadObj.abbreviation;
+                      }
+                      const isDecimal = esUnidadDecimal(prod.unidad);
+                      const precioUnit = preciosOriginales[prod.producto_id] ?? prod.precio;
 
-                    return (
-                      <li key={prod.producto_id} className="flex items-start justify-between py-2 border-b last:border-b-0">
-                        <div className="flex-1">
-                          <div>
-                            <span className="font-semibold">{prod.name}</span>
-                            {prod.marca && <span className="ml-2 text-gray-500 text-xs"></span>}
-                          </div>
-                          <div className="text-xs text-gray-700">
-                            Precio Producto: S/ {precioUnit?.toFixed(2)} {unidadAbrev}
-                          </div>
-                          <div className="text-xs text-gray-700">
-                            Subtotal Producto: S/ {
-                              isDecimal
-                                ? prod.precio.toFixed(2)
-                                : (precioUnit * prod.cantidad).toFixed(2)
+                      return (
+                        <li key={prod.producto_id} className="flex items-start justify-between py-2 border-b last:border-b-0">
+                          <div className="flex-1">
+                            <div>
+                              <span className="font-semibold">{prod.name}</span>
+                              {prod.marca && <span className="ml-2 text-gray-500 text-xs"></span>}
+                            </div>
+                            <div className="text-xs text-gray-700">
+                              Precio Producto: S/ {precioUnit?.toFixed(2)} {unidadAbrev}
+                            </div>
+                            <div className="text-xs text-gray-700">
+                              Subtotal Producto: S/ {
+                                isDecimal
+                                  ? prod.precio.toFixed(2)
+                                  : (precioUnit * prod.cantidad).toFixed(2)
                             } {unidadAbrev}
+                            </div>
+                            <div className="mt-1 flex flex-col gap-1">
+                              {isDecimal ? (
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="text"
+                                    inputMode="decimal"
+                                    min={0.1}
+                                    step={0.1}
+                                    max={stock}
+                                    value={editPrecio[prod.producto_id] !== undefined ? editPrecio[prod.producto_id] : (prod.cantidad * precioUnit).toString()}
+                                    onChange={e => handlePrecioInput(prod, e.target.value, precioUnit, stock)}
+                                    className="border border-gray-300 rounded px-2 py-1 w-16 text-right text-sm mx-1"
+                                    placeholder="Precio"
+                                    title="Precio total"
+                                    autoComplete="off"
+                                  />
+                                  <span>x</span>
+                                  <input
+                                    type="text"
+                                    inputMode="decimal"
+                                    min={0.1}
+                                    step={0.1}
+                                    max={stock}
+                                    value={editCantidad[prod.producto_id] !== undefined ? editCantidad[prod.producto_id] : prod.cantidad.toString()}
+                                    onChange={e => handleCantidadInput(prod, e.target.value, stock, precioUnit, true)}
+                                    className="border border-gray-300 rounded px-2 py-1 w-16 text-right text-sm mx-1"
+                                    placeholder="Cantidad"
+                                    title="Cantidad en decimales"
+                                    autoComplete="off"
+                                  />
+                                  {unidadAbrev && <span>{unidadAbrev}</span>}
+                                </div>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    step={1}
+                                    max={stock}
+                                    value={editCantidad[prod.producto_id] !== undefined ? editCantidad[prod.producto_id] : prod.cantidad}
+                                    onChange={e => handleCantidadInput(prod, e.target.value, stock, precioUnit, false)}
+                                    className="border border-gray-300 rounded px-2 py-1 w-16 text-right text-sm mx-1"
+                                    placeholder="Cantidad"
+                                    title="Cantidad"
+                                    autoComplete="off"
+                                  />
+                                  {unidadAbrev && <span>{unidadAbrev}</span>}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className="mt-1 flex flex-col gap-1">
-                            {isDecimal ? (
-                              <div className="flex items-center gap-2">
-                                <input
-                                  type="text"
-                                  inputMode="decimal"
-                                  min={0.1}
-                                  step={0.1}
-                                  max={stock}
-                                  value={editPrecio[prod.producto_id] !== undefined ? editPrecio[prod.producto_id] : (prod.cantidad * precioUnit).toString()}
-                                  onChange={e => handlePrecioInput(prod, e.target.value, precioUnit, stock)}
-                                  className="border border-gray-300 rounded px-2 py-1 w-16 text-right text-sm mx-1"
-                                  placeholder="Precio"
-                                  title="Precio total"
-                                  autoComplete="off"
-                                />
-                                <span>x</span>
-                                <input
-                                  type="text"
-                                  inputMode="decimal"
-                                  min={0.1}
-                                  step={0.1}
-                                  max={stock}
-                                  value={editCantidad[prod.producto_id] !== undefined ? editCantidad[prod.producto_id] : prod.cantidad.toString()}
-                                  onChange={e => handleCantidadInput(prod, e.target.value, stock, precioUnit, true)}
-                                  className="border border-gray-300 rounded px-2 py-1 w-16 text-right text-sm mx-1"
-                                  placeholder="Cantidad"
-                                  title="Cantidad en decimales"
-                                  autoComplete="off"
-                                />
-                                {unidadAbrev && <span>{unidadAbrev}</span>}
-                              </div>
-                            ) : (
-                              <div className="flex items-center gap-2">
-                                <input
-                                  type="number"
-                                  min={1}
-                                  step={1}
-                                  max={stock}
-                                  value={editCantidad[prod.producto_id] !== undefined ? editCantidad[prod.producto_id] : prod.cantidad}
-                                  onChange={e => handleCantidadInput(prod, e.target.value, stock, precioUnit, false)}
-                                  className="border border-gray-300 rounded px-2 py-1 w-16 text-right text-sm mx-1"
-                                  placeholder="Cantidad"
-                                  title="Cantidad"
-                                  autoComplete="off"
-                                />
-                                {unidadAbrev && <span>{unidadAbrev}</span>}
-                              </div>
+                          {/* Botones a la derecha, en horizontal */}
+                          <div className="flex flex-row items-center gap-2 ml-4">
+                            <button
+                              className="px-2 py-1 bg-gray-200 rounded hover:bg-green-100 transition disabled:opacity-50"
+                              onClick={() => handleDisminuir(prod.producto_id)}
+                              disabled={actualizando || prod.cantidad <= (isDecimal ? 0.1 : 1)}
+                              type="button"
+                            >-</button>
+                            <span>{prod.cantidad}</span>
+                            <button
+                              className="px-2 py-1 bg-gray-200 rounded hover:bg-green-100 transition disabled:opacity-50"
+                              onClick={() => handleAumentar(prod.producto_id)}
+                              disabled={actualizando}
+                              type="button"
+                            >+</button>
+                            <button
+                              className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700 transition"
+                              onClick={() => handleEliminar(prod.producto_id)}
+                              disabled={actualizando}
+                              type="button"
+                            >X</button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                ) : (
+                  <div className="text-center py-8 text-gray-400">Tu carrito está vacío.</div>
+                )}
+              </div>
+              {/* Footer fijo del carrito */}
+              <div className="flex flex-col border-t border-gray-200 bg-white px-0 py-4 z-10 rounded-b-lg">
+                <div className="flex justify-between items-center font-bold text-green-800 text-lg mb-3">
+                  <span>Total:</span>
+                  <span>
+                    S/ {calcularTotal().toFixed(2)}
+                  </span>
+                </div>
+                <button
+                  className="w-full bg-green-800 text-white py-2 rounded font-semibold transition hover:bg-green-900"
+                  disabled={!carrito || carrito.productos.length === 0}
+                  type="button"
+                  onClick={handleCheckoutPro}
+                >
+                  Pagar con Mercado Pago
+                </button>
+                <button
+                  className="w-full mt-2 bg-gray-200 text-green-800 py-2 rounded font-semibold transition hover:bg-gray-300"
+                  type="button"
+                  onClick={onClose}
+                >
+                  Volver
+                </button>
+              </div>
+            </div>
+          )}
+          {tab === "historial" && (
+            <div className="flex flex-col flex-1 min-w-0">
+              {/* Historial de compras */}
+              <div className="flex-1 overflow-y-auto max-h-[380px] border rounded bg-white shadow-inner p-2">
+                {loadingHistorial ? (
+                  <div className="text-center py-8 text-gray-400">Cargando historial...</div>
+                ) : historial.length === 0 ? (
+                  <div className="text-center py-8 text-gray-400">No tienes compras registradas.</div>
+                ) : (
+                  <ul className="list-none m-0 p-0 text-black">
+                    {historial.map((venta) => {
+                      const expanded = expandedVentas[venta._id];
+                      const mostrarItems = expanded ? venta.items : venta.items.slice(0, 1);
+                      return (
+                        <li key={venta._id} className="mb-4 pb-2 border-b border-gray-100">
+                          <div className="flex justify-between items-center">
+                            <span className="font-semibold text-green-800">{venta.nfac}</span>
+                            <span className="text-xs text-gray-500">{new Date(venta.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          <div className="text-sm text-gray-700 mb-1">
+                            Estado: <span className="font-semibold">{venta.estado}</span>
+                            {venta.tipoPago && (
+                              <span className="ml-2 text-gray-500">({venta.tipoPago})</span>
                             )}
                           </div>
-                        </div>
-                        {/* Botones a la derecha, en horizontal */}
-                        <div className="flex flex-row items-center gap-2 ml-4">
-                          <button
-                            className="px-2 py-1 bg-gray-200 rounded hover:bg-green-100 transition disabled:opacity-50"
-                            onClick={() => handleDisminuir(prod.producto_id)}
-                            disabled={actualizando || prod.cantidad <= (isDecimal ? 0.1 : 1)}
-                            type="button"
-                          >-</button>
-                          <span>{prod.cantidad}</span>
-                          <button
-                            className="px-2 py-1 bg-gray-200 rounded hover:bg-green-100 transition disabled:opacity-50"
-                            onClick={() => handleAumentar(prod.producto_id)}
-                            disabled={actualizando}
-                            type="button"
-                          >+</button>
-                          <button
-                            className="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700 transition"
-                            onClick={() => handleEliminar(prod.producto_id)}
-                            disabled={actualizando}
-                            type="button"
-                          >X</button>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : (
-                <div className="text-center py-8 text-gray-400">Tu carrito está vacío.</div>
-              )}
-            </div>
-            {/* Footer fijo del carrito */}
-            <div className="flex flex-col border-t border-gray-200 bg-white px-0 py-4 z-10 rounded-b-lg">
-              <div className="flex justify-between items-center font-bold text-green-800 text-lg mb-3">
-                <span>Total:</span>
-                <span>
-                  S/ {calcularTotal().toFixed(2)}
-                </span>
-              </div>
-              <button
-                className="w-full bg-green-800 text-white py-2 rounded font-semibold transition hover:bg-green-900"
-                disabled={!carrito || carrito.productos.length === 0}
-                type="button"
-                onClick={handleCheckoutPro}
-              >
-                Pagar con Mercado Pago
-              </button>
-              <button
-                className="w-full mt-2 bg-gray-200 text-green-800 py-2 rounded font-semibold transition hover:bg-gray-300"
-                type="button"
-                onClick={onClose}
-              >
-                Volver
-              </button>
-            </div>
-          </div>
-          {/* Historial de compras */}
-          <div className="flex-1 flex flex-col min-w-[380px] max-w-[600px]">
-            <h3 className="text-lg font-semibold text-green-700 mb-2">Historial de Compras</h3>
-            <div className="flex-1 overflow-y-auto max-h-[480px] border rounded bg-white shadow-inner p-2">
-              {loadingHistorial ? (
-                <div className="text-center py-8 text-gray-400">Cargando historial...</div>
-              ) : historial.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">No tienes compras registradas.</div>
-              ) : (
-                <ul className="list-none m-0 p-0 text-black">
-                  {historial.map((venta) => {
-                    const expanded = expandedVentas[venta._id];
-                    const mostrarItems = expanded ? venta.items : venta.items.slice(0, 1);
-                    return (
-                      <li key={venta._id} className="mb-4 pb-2 border-b border-gray-100">
-                        <div className="flex justify-between items-center">
-                          <span className="font-semibold text-green-800">{venta.nfac}</span>
-                          <span className="text-xs text-gray-500">{new Date(venta.createdAt).toLocaleDateString()}</span>
-                        </div>
-                        <div className="text-sm text-gray-700 mb-1">
-                          Estado: <span className="font-semibold">{venta.estado}</span>
-                          {venta.tipoPago && (
-                            <span className="ml-2 text-gray-500">({venta.tipoPago})</span>
+                          <div className="text-sm text-gray-700 mb-1">
+                            Total: <span className="font-semibold">S/ {venta.totalVenta.toFixed(2)}</span>
+                          </div>
+                          <ul className="ml-4 text-xs text-gray-600">
+                            {mostrarItems.map((item, idx) => (
+                              <li key={idx}>
+                                {item.cantidad} x {productoNombres[item.producto] || item.producto} - S/ {item.precio}
+                              </li>
+                            ))}
+                          </ul>
+                          {venta.items.length > 1 && (
+                            <button
+                              className="text-green-700 text-xs mt-1 underline hover:text-green-900"
+                              onClick={() =>
+                                setExpandedVentas(prev => ({
+                                  ...prev,
+                                  [venta._id]: !expanded
+                                }))
+                              }
+                            >
+                              {expanded ? "Ver menos" : `Ver más (${venta.items.length - 1} más)`}
+                            </button>
                           )}
-                        </div>
-                        <div className="text-sm text-gray-700 mb-1">
-                          Total: <span className="font-semibold">S/ {venta.totalVenta.toFixed(2)}</span>
-                        </div>
-                        <ul className="ml-4 text-xs text-gray-600">
-                          {mostrarItems.map((item, idx) => (
-                            <li key={idx}>
-                              {item.cantidad} x {productoNombres[item.producto] || item.producto} - S/ {item.precio}
-                            </li>
-                          ))}
-                        </ul>
-                        {venta.items.length > 1 && (
-                          <button
-                            className="text-green-700 text-xs mt-1 underline hover:text-green-900"
-                            onClick={() =>
-                              setExpandedVentas(prev => ({
-                                ...prev,
-                                [venta._id]: !expanded
-                              }))
-                            }
-                          >
-                            {expanded ? "Ver menos" : `Ver más (${venta.items.length - 1} más)`}
-                          </button>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
