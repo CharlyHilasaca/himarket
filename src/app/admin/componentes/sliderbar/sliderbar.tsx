@@ -10,12 +10,12 @@ interface SidebarProps {
 
 export default function Sidebar({ selectedOption, setSelectedOption, projectName }: SidebarProps) {
   const options = [
-    { label: "Ventas", icon: <Image  src="/ventas.png" alt="Ventas" width={200} height={200} className="sidebar-icon" /> },
-    { label: "Historiales", icon: <Image  src="/historiales.png" alt="Historiales" width={200} height={200} className="sidebar-icon" /> },
-    { label: "Clientes", icon: <Image  src="/clientes.png" alt="Clientes" width={200} height={200} className="sidebar-icon" /> },
-    { label: "Gráficos", icon: <Image  src="/graficos.png" alt="Gráficos" width={200} height={200} className="sidebar-icon" /> },
-    { label: "Inventario", icon: <Image  src="/inventario.png" alt="Inventario" width={200} height={200} className="sidebar-icon" /> },
-    { label: "Productos", icon: <Image  src="/productos.png" alt="Productos" width={200} height={200} className="sidebar-icon" /> },
+    { label: "Ventas", icon: <Image  src="/ventas.webp" alt="Ventas" width={200} height={200} className="sidebar-icon" /> },
+    { label: "Historiales", icon: <Image  src="/historiales.webp" alt="Historiales" width={200} height={200} className="sidebar-icon" /> },
+    { label: "Clientes", icon: <Image  src="/clientes.webp" alt="Clientes" width={200} height={200} className="sidebar-icon" /> },
+    { label: "Gráficos", icon: <Image  src="/graficos.webp" alt="Gráficos" width={200} height={200} className="sidebar-icon" /> },
+    { label: "Inventario", icon: <Image  src="/inventario.webp" alt="Inventario" width={200} height={200} className="sidebar-icon" /> },
+    { label: "Productos", icon: <Image  src="/productos.webp" alt="Productos" width={200} height={200} className="sidebar-icon" /> },
   ];
 
   return (

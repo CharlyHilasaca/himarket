@@ -45,7 +45,7 @@ export default function LoginOverlay({ onClose, onSuccess, onShowRegister }: { o
         </form>
         <div className="flex flex-col gap-2 mt-4">
           <button type="button" onClick={() => window.location.href = '/api/auth/google'} className="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 font-semibold py-2 rounded hover:bg-gray-100 transition">
-            <Image src="/google.png" alt="Google" className="w-5 h-5" height={60} width={60}/>
+            <Image src="/google.webp" alt="Google" className="w-5 h-5" height={60} width={60}/>
             Iniciar sesión con Google
           </button>
           <button

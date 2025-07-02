@@ -76,7 +76,7 @@ export default function Header({
       <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 md:py-4">
         <div className="flex items-center justify-between md:justify-start gap-2">
           <div className="flex items-center gap-2">
-            <Image src="/logo2.png" alt="Logo" width={36} height={36} />
+            <Image src="/logo2.webp" alt="Logo" width={36} height={36} />
             <span className="text-lg md:text-xl font-bold whitespace-nowrap">
               {proyectoNombre ? proyectoNombre : "HiMarket"}
             </span>

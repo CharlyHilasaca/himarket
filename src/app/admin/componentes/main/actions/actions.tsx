@@ -28,15 +28,15 @@ export default function Actions({ onVentaClick, onAddStockClick }: ActionsProps)
   return (
     <section className="actions-section">
       <button className="action-button venta" onClick={onVentaClick}>
-        <Image  src="/ventat.png" alt="Ventas" width={50} height={50} className="sidebar-icon" />
+        <Image  src="/ventat.webp" alt="Ventas" width={50} height={50} className="sidebar-icon" />
         Hacer Venta
       </button>
       <button className="action-button stock" onClick={onAddStockClick}>
-        <Image  src="/productot.png" alt="Agregar Stock" width={50} height={50} className="sidebar-icon" />
+        <Image  src="/productot.webp" alt="Agregar Stock" width={50} height={50} className="sidebar-icon" />
         Agregar Stock
       </button>
       <button className="action-button ganancias">
-        <Image  src="/gananciat.png" alt="Ganancias" width={50} height={50} className="sidebar-icon" />
+        <Image  src="/gananciat.webp" alt="Ganancias" width={50} height={50} className="sidebar-icon" />
         Ventas S/.{ganancias.toFixed(2)}
       </button>
     </section>

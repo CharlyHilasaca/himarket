@@ -92,7 +92,7 @@ export default function ProductDetailOverlay({
               <>
                 <div className="w-[160px] h-[160px] relative flex items-center justify-center">
                   <Image
-                    src={producto.image ? (producto.image.startsWith("/uploads/") ? producto.image : `/uploads/${producto.image}`) : "/placeholder.png"}
+                    src={producto.image ? (producto.image.startsWith("/uploads/") ? producto.image : `/uploads/${producto.image}`) : "/placeholder.webp"}
                     alt={producto.name || "Producto"}
                     fill
                     style={{ objectFit: "contain" }}
@@ -125,7 +125,7 @@ export default function ProductDetailOverlay({
                   className="bg-gray-100 rounded-full px-4 py-2 flex items-center gap-2 min-w-[180px] hover:bg-green-100 transition"
                   onClick={() => setSelectedProductId(prod._id)}
                 >
-                  <Image src={prod.image ? (prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`) : "/placeholder.png"} alt={prod.name || "Producto relacionado"} width={32} height={32} />
+                  <Image src={prod.image ? (prod.image.startsWith("/uploads/") ? prod.image : `/uploads/${prod.image}`) : "/placeholder.webp"} alt={prod.name || "Producto relacionado"} width={32} height={32} />
                   <span className="font-semibold text-green-900">{prod.name}</span>
                 </button>
               ))}

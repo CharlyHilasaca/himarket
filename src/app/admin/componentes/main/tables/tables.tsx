@@ -183,7 +183,7 @@ export default function Tables() {
                 <span>{item.name}{item.marca ? ` (${item.marca})` : ""} - Stock: {item.stock}</span>
                 {item.image && (
                   <Image
-                    src={`/bajostock.png`}
+                    src={`/bajostock.webp`}
                     alt={item.name}
                     width={30}
                     height={30}
@@ -210,7 +210,7 @@ export default function Tables() {
                 <div className="flex items-center gap-3 w-full">
                   {item.image && (
                     <Image
-                      src={`/masvendido.png`}
+                      src={`/masvendido.webp`}
                       alt={item.name}
                       width={24}
                       height={24}

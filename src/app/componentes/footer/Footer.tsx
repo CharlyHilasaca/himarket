@@ -10,10 +10,10 @@ export default function Footer() {
           <div className="w-10 h-1 bg-yellow-500 mb-3" />
           <p className="mb-4 text-sm">Tus tiendas de confianza a precios de confianza.</p>
           <div className="flex gap-4 mt-2">
-            <a href="#" aria-label="Facebook"><Image src="/fb.png" alt="Facebook" width={32} height={32} /></a>
-            <a href="#" aria-label="Instagram"><Image src="/instagram.png" alt="Instagram" width={32} height={32} /></a>
-            <a href="#" aria-label="Twitter"><Image src="/twiter.png" alt="Twitter" width={32} height={32} /></a>
-            <a href="#" aria-label="WhatsApp"><Image src="/whatsapp.png" alt="WhatsApp" width={32} height={32} /></a>
+            <a href="#" aria-label="Facebook"><Image src="/fb.webp" alt="Facebook" width={32} height={32} /></a>
+            <a href="#" aria-label="Instagram"><Image src="/instagram.webp" alt="Instagram" width={32} height={32} /></a>
+            <a href="#" aria-label="Twitter"><Image src="/twiter.webp" alt="Twitter" width={32} height={32} /></a>
+            <a href="#" aria-label="WhatsApp"><Image src="/whatsapp.webp" alt="WhatsApp" width={32} height={32} /></a>
           </div>
         </div>
         {/* Comprar */}

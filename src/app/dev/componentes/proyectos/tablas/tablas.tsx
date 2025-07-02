@@ -70,7 +70,7 @@ export default function Tablas({ proyectos, onEdit }: TablasProps) {
                     <Image
                       src={proyecto.imagenes.startsWith("/")
                         ? proyecto.imagenes
-                        : `/${proyecto.imagenes}.png`}
+                        : `/${proyecto.imagenes}.webp`}
                       alt={proyecto.nombre}
                       width={64}
                       height={64}

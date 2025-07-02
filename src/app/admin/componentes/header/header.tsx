@@ -14,7 +14,7 @@ export default function Header({ adminName, selectedOption, handleLogout }: Head
     <header className="header">
       <div className="project-info">
         <Image
-          src={/*projectImage || */"/logo1.png"}
+          src={/*projectImage || */"/logo1.webp"}
           alt="Imagen del proyecto"
           width={50} height={50}
           className="project-image"
@@ -24,7 +24,7 @@ export default function Header({ adminName, selectedOption, handleLogout }: Head
       <div className="admin-profile">
         <span>{adminName}</span>
         <Image
-          src="/logout-icon.png" // Ícono de logout
+          src="/logout-icon.webp" // Ícono de logout
           alt="Cerrar sesión"
           width={50} height={50}
           className="logout-icon"

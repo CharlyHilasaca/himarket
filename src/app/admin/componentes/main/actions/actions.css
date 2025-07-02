@@ -39,11 +39,11 @@
 }
 
 .action-button.venta:hover img {
-  content: url('../../../../../../public/ventaf.png');
+  content: url('../../../../../../public/ventaf.webp');
 }
 .action-button.stock:hover img {
-  content: url('../../../../../../public/productof.png');
+  content: url('../../../../../../public/productof.webp');
 }
 .action-button.ganancias:hover img {
-  content: url('../../../../../../public/gananciaf.png');
+  content: url('../../../../../../public/gananciaf.webp');
 }

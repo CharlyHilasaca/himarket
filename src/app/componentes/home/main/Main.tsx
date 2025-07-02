@@ -43,12 +43,12 @@ export default function Main({ proyectoId }: { proyectoId?: number | null }) {
       {/* Beneficios */}
       <div className="bg-[#f8fafc] rounded-xl shadow flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 p-4 sm:p-8 mb-6 sm:mb-10">
         <div className="flex flex-col items-center flex-1">
-          <Image src="/pagoseguro.png" alt="Pago seguro" width={40} height={40} className="sm:w-12 sm:h-12" />
+          <Image src="/pagoseguro.webp" alt="Pago seguro" width={40} height={40} className="sm:w-12 sm:h-12" />
           <span className="text-black font-bold text-base sm:text-lg mt-2">Pago Seguro</span>
           <span className="text-black text-center text-xs sm:text-sm">Protegemos tus datos</span>
         </div>
         <div className="flex flex-col items-center flex-1">
-          <Image src="/soporte.png" alt="Soporte" width={40} height={40} className="sm:w-12 sm:h-12" />
+          <Image src="/soporte.webp" alt="Soporte" width={40} height={40} className="sm:w-12 sm:h-12" />
           <span className="text-black font-bold text-base sm:text-lg mt-2">Soporte 24/7</span>
           <span className="text-black text-center text-xs sm:text-sm">Estamos aquí para ayudarte</span>
         </div>
