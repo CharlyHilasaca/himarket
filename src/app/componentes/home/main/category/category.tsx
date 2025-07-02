@@ -19,44 +19,35 @@ export default function Category({
   categorias?: Categoria[];
 }) {
   const [startIdx, setStartIdx] = React.useState(0);
-  const [animDirection, setAnimDirection] = React.useState<"left" | "right" | null>(null);
 
   const allCategorias = [{ _id: "all", name: "Todos" }, ...categorias];
 
   const handlePrev = () => {
-    setAnimDirection("left");
-    setTimeout(() => {
-      setStartIdx((prev) => (prev - 1 + allCategorias.length) % allCategorias.length);
-      setAnimDirection(null);
-    }, 200);
+    setStartIdx((prev) => Math.max(0, prev - 1));
   };
   const handleNext = () => {
-    setAnimDirection("right");
-    setTimeout(() => {
-      setStartIdx((prev) => (prev + 1) % allCategorias.length);
-      setAnimDirection(null);
-    }, 200);
+    setStartIdx((prev) =>
+      prev + visibleCount < allCategorias.length ? prev + 1 : prev
+    );
   };
 
-  const visibleCategorias = [];
-  for (let i = 0; i < visibleCount; i++) {
-    visibleCategorias.push(allCategorias[(startIdx + i) % allCategorias.length]);
-  }
+  const visibleCategorias = allCategorias.slice(startIdx, startIdx + visibleCount);
 
   return (
-    <div className="flex items-center justify-center gap-2 mb-8">
+    <div className="flex items-center justify-center gap-2 mb-8 w-full">
       <button
         onClick={handlePrev}
-        className="p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50"
+        className="p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50 flex-fixed"
         aria-label="Anterior"
+        disabled={startIdx === 0}
       >
         <FaChevronLeft />
       </button>
-      <div className={`flex gap-2 transition-transform duration-200 ${animDirection === "left" ? "-translate-x-8 opacity-60" : animDirection === "right" ? "translate-x-8 opacity-60" : "translate-x-0 opacity-100"}`}>
+      <div className="flex gap-2 overflow-hidden w-full max-w-[95vw] sm:max-w-[600px]">
         {visibleCategorias.map((cat, i) => (
           <button
             key={cat._id + '-' + i}
-            className={`px-5 py-2 rounded-full font-semibold shadow transition-colors duration-200 ${selectedName === cat.name ? "bg-green-700 text-white hover:bg-green-800" : "bg-gray-200 text-green-800 hover:bg-green-100"}`}
+            className={`flex-fixed px-5 py-2 rounded-full font-semibold shadow transition-colors duration-200 ${selectedName === cat.name ? "bg-green-700 text-white hover:bg-green-800" : "bg-gray-200 text-green-800 hover:bg-green-100"}`}
             onClick={() => onSelect && onSelect(cat.name)}
           >
             {cat.name}
@@ -65,8 +56,9 @@ export default function Category({
       </div>
       <button
         onClick={handleNext}
-        className="p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50"
+        className="p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50 flex-fixed"
         aria-label="Siguiente"
+        disabled={startIdx + visibleCount >= allCategorias.length}
       >
         <FaChevronRight />
       </button>

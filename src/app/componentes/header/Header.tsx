@@ -71,13 +71,13 @@ export default function Header({
   }, [menuOpen]);
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-green-700 text-white shadow-md">
+    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-green-700 text-white shadow-md border-b border-green-800">
       {/* Fila superior */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between px-4 py-3 md:py-4">
         <div className="flex items-center justify-between md:justify-start gap-2">
           <div className="flex items-center gap-2">
             <Image src="/logo2.png" alt="Logo" width={36} height={36} />
-            <span className="text-lg md:text-xl font-bold">
+            <span className="text-lg md:text-xl font-bold whitespace-nowrap">
               {proyectoNombre ? proyectoNombre : "HiMarket"}
             </span>
           </div>
@@ -149,20 +149,22 @@ export default function Header({
         </div>
       </div>
       {/* Fila navegación */}
-      <nav className="w-full overflow-x-auto scrollbar-thin scrollbar-thumb-green-800 scrollbar-track-green-700">
-        <div className="flex gap-2 md:gap-4 px-2 py-2 md:justify-center min-w-[400px]">
-          {navOptions.map((opt) => (
-            <button
-              key={opt.value}
-              onClick={() => {
-                onSelect(opt.value);
-                setNavOpen(false);
-              }}
-              className={`px-3 py-1 rounded font-semibold transition whitespace-nowrap ${selected === opt.value ? "bg-white text-green-700" : "hover:underline"}`}
-            >
-              {opt.label}
-            </button>
-          ))}
+      <nav className="w-full border-t border-green-800 bg-green-700">
+        <div className="relative w-full">
+          <div className="flex gap-2 md:gap-4 px-2 py-2 md:justify-center w-full overflow-x-auto scrollbar-thin scrollbar-thumb-green-800 scrollbar-track-green-700">
+            {navOptions.map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => {
+                  onSelect(opt.value);
+                  setNavOpen(false);
+                }}
+                className={`px-3 py-1 rounded font-semibold transition whitespace-nowrap ${selected === opt.value ? "bg-white text-green-700" : "hover:underline"}`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </div>
       </nav>
       {/* Menú lateral móvil */}
