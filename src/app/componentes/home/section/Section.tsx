@@ -76,7 +76,7 @@ export default function Section({ onSearchProduct, onSearchText, searchText, res
   };
 
   return (
-    <section className="w-full relative flex items-center justify-center min-h-[280px] sm:min-h-[380px]">
+    <section className="w-full relative flex items-center justify-center min-h-[280px] sm:min-h-[380px] text-white">
       <div className="absolute inset-0 z-0">
         <Image
           src="/abarrotes.webp"
