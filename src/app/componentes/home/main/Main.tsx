@@ -5,6 +5,19 @@ import Category from "./category/category";
 import ProductList from "./products/product";
 import React, { useState, useEffect } from "react";
 
+// Define una interfaz para el producto
+interface ProductoDetalle {
+  _id: string;
+  name: string;
+  marca?: string;
+  description?: string;
+  image?: string;
+  projectDetails?: {
+    proyectoId: string | number;
+    salePrice?: number;
+  }[];
+}
+
 interface Categoria {
   _id: string;
   name: string;
@@ -13,6 +26,7 @@ interface Categoria {
 export default function Main({ proyectoId }: { proyectoId?: number | null }) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(null);
 
   useEffect(() => {
     let url = "/api/categories";
@@ -38,7 +52,27 @@ export default function Main({ proyectoId }: { proyectoId?: number | null }) {
         </h2>
         {/* Categorías dinámicas */}
         <Category onSelect={setSelectedCategory} selectedName={selectedCategory || "Todos"} categorias={categorias} />
-        <ProductList categoryId={selectedCategoryId} proyectoId={proyectoId} />
+        <ProductList
+          categoryId={selectedCategoryId}
+          proyectoId={proyectoId}
+          onProductClick={setSelectedProductId}
+        />
+        {/* Overlay de detalle de producto */}
+        {selectedProductId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-xl shadow-lg max-w-2xl w-full relative p-6">
+              <button
+                className="absolute top-4 right-4 text-green-700 font-bold text-xl"
+                onClick={() => setSelectedProductId(null)}
+                aria-label="Cerrar"
+                type="button"
+              >×</button>
+              {/* Aquí puedes reutilizar tu componente de detalle de producto si lo tienes */}
+              {/* O mostrar los datos básicos del producto */}
+              <ProductDetail productId={selectedProductId} proyectoId={proyectoId} />
+            </div>
+          </div>
+        )}
       </div>
       {/* Beneficios */}
       <div className="bg-[#f8fafc] rounded-xl shadow flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 p-4 sm:p-8 mb-6 sm:mb-10">
@@ -72,5 +106,40 @@ export default function Main({ proyectoId }: { proyectoId?: number | null }) {
         </form>
       </div>
     </main>
+  );
+}
+
+// Componente de detalle de producto (puedes moverlo a su propio archivo si lo prefieres)
+function ProductDetail({ productId, proyectoId }: { productId: string, proyectoId?: number | null }) {
+  const [producto, setProducto] = useState<ProductoDetalle | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/products/${productId}`)
+      .then(res => res.json())
+      .then(setProducto);
+  }, [productId]);
+
+  if (!producto) return <div className="text-center py-8">Cargando...</div>;
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-[120px] h-[120px] relative">
+        <Image
+          src={producto.image ? (producto.image.startsWith("/uploads/") ? producto.image : `/uploads/${producto.image}`) : "/placeholder.webp"}
+          alt={producto.name || "Producto"}
+          fill
+          style={{ objectFit: "contain" }}
+        />
+      </div>
+      <h2 className="text-2xl font-bold text-green-900">{producto.name}</h2>
+      {producto.marca && <div className="text-green-700">Marca: {producto.marca}</div>}
+      {producto.description && <div className="text-gray-700">{producto.description}</div>}
+      {/* Puedes agregar más detalles aquí */}
+      {proyectoId && producto.projectDetails && (
+        <div className="text-green-800 text-lg font-bold mt-2">
+          Precio: S/ {producto.projectDetails.find((pd) => String(pd.proyectoId) === String(proyectoId))?.salePrice ?? "-"}
+        </div>
+      )}
+    </div>
   );
 }

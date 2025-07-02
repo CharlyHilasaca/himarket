@@ -33,11 +33,13 @@ interface Producto {
 export default function ProductList({
   categoryId,
   proyectoId,
-  onCarritoChange // nuevo prop
+  onCarritoChange,
+  onProductClick // <-- nuevo prop
 }: {
   categoryId?: string | null;
   proyectoId?: number | null;
-  onCarritoChange?: (cantidad: number) => void; // nuevo prop
+  onCarritoChange?: (cantidad: number) => void;
+  onProductClick?: (id: string) => void; // <-- nuevo prop
 }) {
   const [productos, setProductos] = useState<Producto[]>([]);
   const [unidades, setUnidades] = useState<Unidad[]>([]);
@@ -209,7 +211,11 @@ export default function ProductList({
             }
           }
           return (
-            <div key={prod._id} className="bg-white rounded-lg shadow p-4 flex flex-col justify-between items-center h-[auto] min-h-[auto] cursor-pointer">
+            <div
+              key={prod._id}
+              className="bg-white rounded-lg shadow p-4 flex flex-col justify-between items-center h-[auto] min-h-[auto] cursor-pointer"
+              onClick={() => onProductClick && onProductClick(prod._id)}
+            >
               <div className="flex flex-col items-center w-full flex-1">
                 <div className="w-[100px] h-[100px] relative flex items-center justify-center">
                   <Image
@@ -233,7 +239,10 @@ export default function ProductList({
               <div className="w-full flex items-end justify-center mt-2 min-h-[40px]">
                 <button
                   className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 w-full max-w-[120px] flex items-center justify-center"
-                  onClick={() => handleAgregar(prod)}
+                  onClick={e => {
+                    e.stopPropagation();
+                    handleAgregar(prod);
+                  }}
                   disabled={agregando === prod._id || typeof stock !== "number" || stock <= 0}
                 >
                   {typeof stock !== "number" || stock <= 0
