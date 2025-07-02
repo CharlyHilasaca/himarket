@@ -184,12 +184,20 @@ export default function Home() {
         <LoginOverlay
           onClose={() => setShowLogin(false)}
           onSuccess={handleLoginSuccess}
+          onShowRegister={() => {
+            setShowLogin(false);
+            setShowRegister(true);
+          }}
         />
       )}
       {showRegister && (
         <RegisterOverlay
           onClose={() => setShowRegister(false)}
           onSuccess={handleRegisterSuccess}
+          onShowLogin={() => {
+            setShowRegister(false);
+            setShowLogin(true);
+          }}
         />
       )}
       {showProyectoModal && user && (

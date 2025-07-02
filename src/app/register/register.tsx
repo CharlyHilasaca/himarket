@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 
-export default function RegisterOverlay({ onClose, onSuccess }: { onClose: () => void, onSuccess: () => void }) {
+export default function RegisterOverlay({ onClose, onSuccess, onShowLogin }: { onClose: () => void, onSuccess: () => void, onShowLogin?: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -55,6 +55,13 @@ export default function RegisterOverlay({ onClose, onSuccess }: { onClose: () =>
           <button type="button" onClick={() => window.location.href = '/api/auth/google'} className="flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 font-semibold py-2 rounded hover:bg-gray-100 transition">
             <Image src="/google.png" alt="Google" className="w-5 h-5" height={60} width={60}/>
             Registrarse con Google
+          </button>
+          <button
+            type="button"
+            className="text-green-700 underline text-sm mt-2"
+            onClick={onShowLogin}
+          >
+            ¿Ya tienes cuenta? Inicia sesión aquí
           </button>
         </div>
       </div>
