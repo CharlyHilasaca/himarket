@@ -21,6 +21,8 @@ export default function HomeContent({ onSearchProduct, onSearchText, searchText,
         <Ofertas />
       ) : (
         <>
+          {/* Espaciador solo para la sección con el buscador */}
+          <div className="h-[104px] md:h-[112px]" />
           <Section
             onSearchProduct={onSearchProduct}
             onSearchText={onSearchText}
