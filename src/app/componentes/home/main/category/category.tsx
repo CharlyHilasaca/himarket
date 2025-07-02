@@ -127,7 +127,7 @@ export default function Category({
         onTouchEnd={handleTouchEnd}
       >
         <div
-          className={`flex gap-2 w-full ${animClass} ${visibleCount === 1 ? "justify-center min-w-[110px]" : "justify-start"}`}
+          className={`flex gap-2 w-full ${animClass} ${visibleCount === 1 ? "justify-center min-w-[110px]" : "justify-center"}`}
         >
           {visibleCategorias.map((cat) => (
             <button
