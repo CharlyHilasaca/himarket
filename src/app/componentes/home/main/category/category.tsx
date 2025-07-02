@@ -122,6 +122,7 @@ export default function Category({
                 break-words whitespace-normal text-center
                 max-w-[140px] min-w-[90px] min-h-[2.2em] max-h-[2.8em]
               `}
+              onClick={() => onSelect && onSelect(cat.name)}
             >
               {cat.name}
             </button>
