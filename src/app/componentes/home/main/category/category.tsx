@@ -119,7 +119,7 @@ export default function Category({
                   : "bg-gray-200 text-green-800 hover:bg-green-100"}
                 flex-shrink-0
                 break-words whitespace-normal text-center
-                max-w-[140px] min-w-[90px] min-h-[2.2em] max-h-[2.8em]
+                max-w-[160px] min-w-[100px] min-h-[2.3em] max-h-[2.85em]
               `}
               onClick={() => onSelect && onSelect(cat.name)}
             >
