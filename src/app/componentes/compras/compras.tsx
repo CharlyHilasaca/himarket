@@ -366,10 +366,13 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
   if (!isOpen) return null;
 
   return (
-    <div ref={sidebarRef} className="w-full min-h-screen flex flex-col items-center justify-start bg-white">
-      <div className="w-full max-w-lg sm:max-w-2xl mx-auto flex flex-col bg-white rounded-lg shadow-lg mt-8 mb-8 border border-gray-200">
+    <div
+      ref={sidebarRef}
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white compras-fullscreen"
+    >
+      <div className="w-full h-full flex flex-col bg-white rounded-none shadow-none border-none max-w-none mx-0 my-0">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 pt-6 pb-4 border-b border-gray-200 bg-white min-h-[56px] relative z-10 rounded-t-lg">
+        <div className="flex items-center justify-between px-4 pt-6 pb-4 border-b border-gray-200 bg-white min-h-[56px] relative z-10">
           <h2 className="text-xl sm:text-2xl font-bold text-green-800">Carrito e Historial</h2>
           <button
             className="text-2xl text-gray-400 hover:text-red-600 transition"
@@ -395,7 +398,7 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
           </button>
         </div>
         {/* Contenido */}
-        <div className="flex-1 flex flex-col px-2 sm:px-8 py-4 sm:py-8 bg-white min-h-[400px]">
+        <div className="flex-1 flex flex-col px-2 sm:px-8 py-4 sm:py-8 bg-white min-h-0 h-0 overflow-y-auto">
           {tab === "carrito" && (
             <div className="flex flex-col flex-1 min-w-0">
               {/* Carrito de compras */}
