@@ -165,7 +165,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#f8fafc] font-sans pt-[72px]">
+    <div className="flex flex-col min-h-screen bg-[#f8fafc] font-sans">
       <Header
         selected={selected}
         onSelect={handleSelect}
@@ -177,7 +177,7 @@ export default function Home() {
         onCarritoClick={() => setShowCarrito(true)}
         carritoCantidad={carritoCantidad}
       />
-      <div className="flex-1 flex flex-col min-h-0">
+      <div className="flex-1 flex flex-col min-h-0 pt-[104]">
         {content}
       </div>
       {showLogin && (
