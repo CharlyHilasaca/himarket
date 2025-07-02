@@ -77,17 +77,17 @@ export default function Category({
   return (
     <div
       className={`
-        flex items-center justify-center gap-2 mb-4 w-full
+        flex items-center justify-center mb-4 w-full
         ${visibleCount === 1 ? "max-w-xs mx-auto" : "max-w-2xl mx-auto"}
       `}
     >
-      <div className={`${visibleCount === 1 ? "flex-1 flex justify-end pr-2" : ""}`}>
+      {/* Contenedor de flecha izquierda */}
+      <div className="flex-shrink-0 flex items-center justify-center min-w-[48px]">
         <button
           onClick={handlePrev}
           className={`
             p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
             transition-all duration-200
-            ${visibleCount > 1 ? "mr-4" : "mr-8"}
             flex-shrink-0
           `}
           aria-label="Anterior"
@@ -96,9 +96,10 @@ export default function Category({
           <FaChevronLeft />
         </button>
       </div>
+      {/* Contenedor de categorías, ocupa el espacio restante */}
       <div
         className={`
-          flex gap-2 overflow-hidden
+          flex-1 flex gap-2 overflow-hidden
           transition-all duration-200
           ${visibleCount === 1 ? "w-[110px]" : "w-full max-w-[420px] sm:max-w-[600px]"}
         `}
@@ -119,22 +120,21 @@ export default function Category({
                   : "bg-gray-200 text-green-800 hover:bg-green-100"}
                 flex-shrink-0
                 break-words whitespace-normal text-center
-                max-w-[auto] min-w-[auto] min-h-[auto] max-h-[auto]
+                max-w-[140px] min-w-[90px] min-h-[2.2em] max-h-[2.8em]
               `}
-              onClick={() => onSelect && onSelect(cat.name)}
             >
               {cat.name}
             </button>
           ))}
         </div>
       </div>
-      <div className={`${visibleCount === 1 ? "flex-1 flex justify-start pl-2" : ""}`}>
+      {/* Contenedor de flecha derecha */}
+      <div className="flex-shrink-0 flex items-center justify-center min-w-[48px]">
         <button
           onClick={handleNext}
           className={`
             p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
             transition-all duration-200
-            ${visibleCount > 1 ? "ml-4" : "ml-8"}
             flex-shrink-0
           `}
           aria-label="Siguiente"
