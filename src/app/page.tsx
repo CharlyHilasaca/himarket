@@ -177,7 +177,7 @@ export default function Home() {
         onCarritoClick={() => setShowCarrito(true)}
         carritoCantidad={carritoCantidad}
       />
-      <div className="flex-1 flex flex-col min-h-0 pt-[104]">
+      <div className="flex-1 flex flex-col min-h-0 pt-[104px]">
         {content}
       </div>
       {showLogin && (
