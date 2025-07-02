@@ -79,7 +79,7 @@ export default function Category({
     // Si hay menos categorías que visibleCount, muestra todas
     if (allCategorias.length <= visibleCount) return allCategorias;
     // Si el scroll llega al final, muestra desde el principio (scroll infinito)
-    let idxs = [];
+    const idxs = [];
     for (let i = 0; i < visibleCount; i++) {
       idxs.push((startIdx + i) % allCategorias.length);
     }
