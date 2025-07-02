@@ -375,10 +375,16 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
         <div className="flex items-center justify-between px-4 pt-6 pb-4 border-b border-gray-200 bg-white min-h-[56px] relative z-10">
           <h2 className="text-xl sm:text-2xl font-bold text-green-800">Carrito e Historial</h2>
           <button
-            className="text-2xl text-gray-400 hover:text-red-600 transition"
+            className="flex items-center gap-2 text-green-700 font-semibold bg-green-100 hover:bg-green-200 px-4 py-2 rounded transition text-base"
             onClick={onClose}
             aria-label="Volver"
-          >×</button>
+            type="button"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Volver
+          </button>
         </div>
         {/* Tabs */}
         <div className="flex w-full border-b border-gray-200 bg-white">
@@ -546,7 +552,7 @@ export default function Compras({ isOpen, onClose }: ComprasProps) {
           {tab === "historial" && (
             <div className="flex flex-col flex-1 min-w-0">
               {/* Historial de compras */}
-              <div className="flex-1 overflow-y-auto max-h-[380px] border rounded bg-white shadow-inner p-2">
+              <div className="flex-1 overflow-y-auto max-h-[auto] border rounded bg-white shadow-inner p-2">
                 {loadingHistorial ? (
                   <div className="text-center py-8 text-gray-400">Cargando historial...</div>
                 ) : historial.length === 0 ? (
