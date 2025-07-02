@@ -112,14 +112,14 @@ export default function Category({
             <button
               key={cat._id}
               className={`
-                px-3 py-2 rounded-full font-semibold shadow transition-colors duration-200 text-xs sm:text-sm leading-tight
+                px-3 py-2 rounded-full font-semibold shadow transition-colors duration-200
+                text-xs sm:text-sm leading-tight
                 ${selectedName === cat.name
                   ? "bg-green-700 text-white hover:bg-green-800"
                   : "bg-gray-200 text-green-800 hover:bg-green-100"}
-                ${visibleCount === 1 ? "w-[110px] text-base text-center whitespace-normal break-words" : ""}
                 flex-shrink-0
-                max-h-[2.7em]
-                category-btn-style
+                break-words whitespace-normal text-center
+                max-w-[140px] min-w-[90px] min-h-[2.2em] max-h-[2.8em]
               `}
               onClick={() => onSelect && onSelect(cat.name)}
             >
