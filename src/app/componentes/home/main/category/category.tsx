@@ -81,19 +81,21 @@ export default function Category({
         ${visibleCount === 1 ? "max-w-xs mx-auto" : "max-w-2xl mx-auto"}
       `}
     >
-      <button
-        onClick={handlePrev}
-        className={`
-          p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
-          transition-all duration-200
-          ${visibleCount > 1 ? "mr-4" : ""}
-          flex-shrink-0
-        `}
-        aria-label="Anterior"
-        disabled={startIdx === 0}
-      >
-        <FaChevronLeft />
-      </button>
+      <div className={`${visibleCount === 1 ? "flex-1 flex justify-end pr-2" : ""}`}>
+        <button
+          onClick={handlePrev}
+          className={`
+            p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
+            transition-all duration-200
+            ${visibleCount > 1 ? "mr-4" : "mr-8"}
+            flex-shrink-0
+          `}
+          aria-label="Anterior"
+          disabled={startIdx === 0}
+        >
+          <FaChevronLeft />
+        </button>
+      </div>
       <div
         className={`
           flex gap-2 overflow-hidden
@@ -106,16 +108,18 @@ export default function Category({
         <div
           className={`flex gap-2 w-full ${animClass} ${visibleCount === 1 ? "justify-center min-w-[110px]" : "justify-start"}`}
         >
-          {visibleCategorias.map((cat, i) => (
+          {visibleCategorias.map((cat) => (
             <button
-              key={cat._id + '-' + i}
+              key={cat._id}
               className={`
-                px-4 py-2 rounded-full font-semibold shadow transition-colors duration-200 text-sm
+                px-3 py-2 rounded-full font-semibold shadow transition-colors duration-200 text-xs sm:text-sm leading-tight
                 ${selectedName === cat.name
                   ? "bg-green-700 text-white hover:bg-green-800"
                   : "bg-gray-200 text-green-800 hover:bg-green-100"}
-                ${visibleCount === 1 ? "w-[110px] text-base" : ""}
+                ${visibleCount === 1 ? "w-[110px] text-base text-center whitespace-normal break-words" : ""}
                 flex-shrink-0
+                max-h-[2.7em]
+                category-btn-style
               `}
               onClick={() => onSelect && onSelect(cat.name)}
             >
@@ -124,19 +128,21 @@ export default function Category({
           ))}
         </div>
       </div>
-      <button
-        onClick={handleNext}
-        className={`
-          p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
-          transition-all duration-200
-          ${visibleCount > 1 ? "ml-4" : ""}
-          flex-shrink-0
-        `}
-        aria-label="Siguiente"
-        disabled={startIdx + visibleCount >= allCategorias.length}
-      >
-        <FaChevronRight />
-      </button>
+      <div className={`${visibleCount === 1 ? "flex-1 flex justify-start pl-2" : ""}`}>
+        <button
+          onClick={handleNext}
+          className={`
+            p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
+            transition-all duration-200
+            ${visibleCount > 1 ? "ml-4" : "ml-8"}
+            flex-shrink-0
+          `}
+          aria-label="Siguiente"
+          disabled={startIdx + visibleCount >= allCategorias.length}
+        >
+          <FaChevronRight />
+        </button>
+      </div>
     </div>
   );
 }
