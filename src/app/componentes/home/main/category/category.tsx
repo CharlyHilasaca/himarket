@@ -84,6 +84,7 @@ export default function Category({
       {/* Contenedor de flecha izquierda */}
       <div className="flex-shrink-0 flex items-center justify-center min-w-[48px]">
         <button
+          type="button"
           onClick={handlePrev}
           className={`
             p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
@@ -112,6 +113,7 @@ export default function Category({
           {visibleCategorias.map((cat) => (
             <button
               key={cat._id}
+              type="button"
               className={`
                 px-3 py-2 rounded-full font-semibold shadow transition-colors duration-200
                 text-xs sm:text-sm leading-tight
@@ -120,7 +122,8 @@ export default function Category({
                   : "bg-gray-200 text-green-800 hover:bg-green-100"}
                 flex-shrink-0
                 break-words whitespace-normal text-center
-                max-w-[140px] min-w-[90px] min-h-[2.2em] max-h-[2.8em]
+                max-w-[140px] min-w-[90px]
+                h-auto min-h-[2.2em]
               `}
               onClick={() => onSelect && onSelect(cat.name)}
             >
@@ -132,6 +135,7 @@ export default function Category({
       {/* Contenedor de flecha derecha */}
       <div className="flex-shrink-0 flex items-center justify-center min-w-[48px]">
         <button
+          type="button"
           onClick={handleNext}
           className={`
             p-2 rounded-full bg-gray-200 text-green-800 hover:bg-green-100 disabled:opacity-50
