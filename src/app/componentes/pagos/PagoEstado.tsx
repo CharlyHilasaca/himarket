@@ -73,6 +73,8 @@ export default function PagoEstado() {
         onSelect={() => router.push("/")}
         carritoCantidad={0}
       />
+      {/* Espaciador para que el contenido no quede tapado por el header fijo */}
+      <div className="h-[104px] md:h-[112px]" />
       <main className={`flex flex-1 flex-col items-center justify-center ${estado.bg}`}>
         <div className="bg-white rounded-xl shadow-lg px-10 py-12 flex flex-col items-center max-w-lg w-full mt-10 mb-10">
           {estado.icon}
