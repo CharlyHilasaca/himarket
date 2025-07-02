@@ -23,8 +23,8 @@ export default function Category({
 
   React.useEffect(() => {
     function updateVisibleCount() {
-      if (window.innerWidth >= 1024) setVisibleCount(5);
-      else if (window.innerWidth >= 640) setVisibleCount(4);
+      if (window.innerWidth >= 1024) setVisibleCount(4);
+      else if (window.innerWidth >= 640) setVisibleCount(3);
       else setVisibleCount(1);
       setStartIdx(0);
     }
