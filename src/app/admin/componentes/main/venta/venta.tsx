@@ -355,13 +355,19 @@ export default function Venta({ onClose }: VentaProps) {
             <h4>Buscar Cliente por DNI</h4>
             <div className="venta-cliente-form">
               <input
-                type="number"
+                type="text"
                 placeholder="DNI"
                 value={dni}
-                onChange={(e) => setDni(e.target.value)}
+                onChange={(e) => {
+                  // Solo permite hasta 8 dígitos numéricos
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 8);
+                  setDni(val);
+                }}
                 maxLength={8}
+                inputMode="numeric"
+                pattern="\d{8}"
               />
-              <button type="button" onClick={handleBuscarCliente} disabled={clienteLoading}>
+              <button type="button" onClick={handleBuscarCliente} disabled={clienteLoading || dni.length !== 8}>
                 Buscar
               </button>
             </div>
