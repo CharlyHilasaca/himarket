@@ -14,7 +14,7 @@ interface ClienteInfo {
   id: number;
   nombres: string;
   apellidos: string;
-  dni?: string;
+  // Elimina dni para que no se muestre en el frontend
   email?: string;
 }
 
@@ -42,7 +42,13 @@ export default function ClientesContent({
       .then((res) => (res.ok ? res.json() : []))
       .then((clientes: ClienteInfo[]) => {
         const found = clientes.find((c) => c.id === selectedCliente);
-        setClienteInfo(found || null);
+        // Elimina el uso de 'dni' y 'any'
+        if (found) {
+          // No extraigas ni uses dni, solo guarda el objeto tipado
+          setClienteInfo(found);
+        } else {
+          setClienteInfo(null);
+        }
       })
       .catch(() => setClienteInfo(null));
   }, [selectedCliente]);
@@ -65,11 +71,7 @@ export default function ClientesContent({
         {clienteInfo && (
           <span className="text-green-900 font-semibold text-base">
             {clienteInfo.nombres} {clienteInfo.apellidos}
-            {clienteInfo.dni && (
-              <span className="ml-2 text-gray-600 text-sm">
-                DNI: {clienteInfo.dni}
-              </span>
-            )}
+            {/* No mostrar DNI */}
             {clienteInfo.email && (
               <span className="ml-2 text-gray-600 text-sm">
                 Email: {clienteInfo.email}

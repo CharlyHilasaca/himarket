@@ -22,10 +22,10 @@ export default function Tables({ clienteId }: TablesProps) {
   useEffect(() => {
     if (!clienteId) return;
     setLoading(true);
-    // Corrige la ruta: usa /api/clientes/historialcompras
+    // Usa el endpoint correcto para historial de compras por cliente
     fetch(`/api/clientes/historialcompras?clienteId=${clienteId}`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
-      .then((data: Venta[]) => setVentas(data))
+      .then((data: Venta[]) => setVentas(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false));
   }, [clienteId]);
 
