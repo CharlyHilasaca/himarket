@@ -33,6 +33,7 @@ export default function Etiquetas({ proyectoId }: EtiquetasProps) {
   });
   const [saving, setSaving] = useState(false);
 
+  // Cargar productos
   useEffect(() => {
     const fetchProductos = async () => {
       const res = await fetch("/api/productsproyecto", { credentials: "include" });
@@ -63,7 +64,7 @@ export default function Etiquetas({ proyectoId }: EtiquetasProps) {
     if (!modalProducto || !modalDetail) return;
     setSaving(true);
     try {
-      await fetch(`/api/products/${modalProducto._id}/project-details`, {
+      const res = await fetch(`/api/products/${modalProducto._id}/project-details`, {
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -74,8 +75,18 @@ export default function Etiquetas({ proyectoId }: EtiquetasProps) {
           unidad: modalDetail.unidad,
         }),
       });
-      setModalProducto(null);
-      setModalDetail(null);
+      if (res.ok) {
+        // Refresca productos para ver los cambios reflejados
+        const productosRes = await fetch("/api/productsproyecto", { credentials: "include" });
+        if (productosRes.ok) {
+          const data = await productosRes.json();
+          setProductos(data);
+        }
+        setModalProducto(null);
+        setModalDetail(null);
+      } else {
+        alert("Error al actualizar el producto.");
+      }
     } catch {
       alert("Error al actualizar el producto.");
     }
