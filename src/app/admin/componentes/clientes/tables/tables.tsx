@@ -22,7 +22,6 @@ export default function Tables({ clienteId }: TablesProps) {
   useEffect(() => {
     if (!clienteId) return;
     setLoading(true);
-    // Usa el endpoint correcto del backend para historial de compras por cliente
     fetch(`/api/clientespg/historialcompras?clienteId=${clienteId}`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Venta[]) => setVentas(Array.isArray(data) ? data : []))
@@ -38,11 +37,11 @@ export default function Tables({ clienteId }: TablesProps) {
       {/* Tabla de historial de ventas */}
       <div className="flex-1 min-w-[320px] max-w-[500px] bg-white p-4 rounded-lg shadow">
         <h3 className="text-lg font-bold mb-2 text-green-800">Historial de Ventas</h3>
-        <div className="max-h-[320px] overflow-y-auto rounded-lg border border-gray-200">
+        <div className="max-h-[420px] overflow-y-auto rounded-lg border border-gray-200">
           {loading ? (
             <div className="text-gray-500 text-sm my-2">Cargando...</div>
           ) : ventas.length > 0 ? (
-            <table className="w-full border-collapse">
+            <table className="w-full border-collapse text-black">
               <thead>
                 <tr>
                   <th className="bg-green-700 text-white p-2">Fecha</th>
@@ -58,10 +57,10 @@ export default function Tables({ clienteId }: TablesProps) {
                     onClick={() => setSelectedVenta(venta._id)}
                     className={`cursor-pointer ${selectedVenta === venta._id ? "bg-green-100 font-bold" : "hover:bg-green-50"}`}
                   >
-                    <td className="border p-2">{new Date(venta.createdAt).toLocaleDateString()}</td>
-                    <td className="border p-2">S/ {venta.totalVenta.toFixed(2)}</td>
-                    <td className="border p-2">{venta.tipoPago || "-"}</td>
-                    <td className="border p-2">{venta.estado || "-"}</td>
+                    <td className="border p-2 text-black">{new Date(venta.createdAt).toLocaleDateString()}</td>
+                    <td className="border p-2 text-black">S/ {venta.totalVenta.toFixed(2)}</td>
+                    <td className="border p-2 text-black">{venta.tipoPago || "-"}</td>
+                    <td className="border p-2 text-black">{venta.estado || "-"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -75,9 +74,9 @@ export default function Tables({ clienteId }: TablesProps) {
       {/* Tabla de detalles de la venta */}
       <div className="flex-1 min-w-[320px] max-w-[500px] bg-white p-4 rounded-lg shadow">
         <h3 className="text-lg font-bold mb-2 text-green-800">Detalles de la Venta</h3>
-        <div className="max-h-[320px] overflow-y-auto rounded-lg border border-gray-200">
+        <div className="max-h-[420px] overflow-y-auto rounded-lg border border-gray-200">
           {detalleVenta.length > 0 ? (
-            <table className="w-full border-collapse">
+            <table className="w-full border-collapse text-black">
               <thead>
                 <tr>
                   <th className="bg-green-700 text-white p-2">Producto</th>
@@ -88,9 +87,9 @@ export default function Tables({ clienteId }: TablesProps) {
               <tbody>
                 {detalleVenta.map((detalle, idx) => (
                   <tr key={idx}>
-                    <td className="border p-2">{detalle.nombre || detalle.producto}</td>
-                    <td className="border p-2">S/ {detalle.precio}</td>
-                    <td className="border p-2">{detalle.cantidad}</td>
+                    <td className="border p-2 text-black">{detalle.nombre || detalle.producto}</td>
+                    <td className="border p-2 text-black">S/ {detalle.precio}</td>
+                    <td className="border p-2 text-black">{detalle.cantidad}</td>
                   </tr>
                 ))}
               </tbody>
