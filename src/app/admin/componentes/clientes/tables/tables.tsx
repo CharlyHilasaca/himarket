@@ -22,8 +22,8 @@ export default function Tables({ clienteId }: TablesProps) {
   useEffect(() => {
     if (!clienteId) return;
     setLoading(true);
-    // Usa el endpoint correcto para historial de compras por cliente
-    fetch(`/clientes/historialcompras?clienteId=${clienteId}`, { credentials: "include" })
+    // Usa el endpoint correcto del backend para historial de compras por cliente
+    fetch(`/api/clientespg/historialcompras?clienteId=${clienteId}`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Venta[]) => setVentas(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false));
