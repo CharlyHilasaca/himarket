@@ -24,7 +24,7 @@ export default function Tables({ clienteId }: TablesProps) {
     setLoading(true);
     // Usa el endpoint correcto según tu backend:
     // /api/ventas/cliente/:clienteId
-    fetch(`/api/ventas/cliente/${clienteId}`, { credentials: "include" })
+    fetch(`/ventas/cliente/${clienteId}`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Venta[]) => setVentas(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false));
