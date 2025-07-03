@@ -30,16 +30,16 @@ export default function Modal({ isOpen, onClose, onSelectCliente }: ModalProps) 
       // Puedes ajustar el endpoint según tu backend
       const res = await fetch(`/api/clientespg`);
       if (!res.ok) throw new Error("Error al buscar clientes");
-      const data = await res.json();
+      const data: Cliente[] = await res.json();
       // Filtra en frontend por dni, nombres, apellidos o email
-      const filtered = data.filter((cliente: any) =>
+      const filtered = data.filter((cliente) =>
         (cliente.dni && cliente.dni.toLowerCase().includes(value.toLowerCase())) ||
         (cliente.nombres && cliente.nombres.toLowerCase().includes(value.toLowerCase())) ||
         (cliente.apellidos && cliente.apellidos.toLowerCase().includes(value.toLowerCase())) ||
         (cliente.email && cliente.email.toLowerCase().includes(value.toLowerCase()))
       );
       setClientes(filtered);
-    } catch (err) {
+    } catch {
       setError("No se pudo buscar clientes");
       setClientes([]);
     }
