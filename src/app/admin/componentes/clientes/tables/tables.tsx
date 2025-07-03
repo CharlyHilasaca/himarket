@@ -12,7 +12,7 @@ interface Venta {
   totalVenta: number;
   tipoPago?: string;
   estado?: string;
-  items: { producto: string; precio: number; cantidad: number }[];
+  items: { producto: string; precio: number; cantidad: number; nombre?: string }[];
 }
 
 export default function Tables({ clienteId }: TablesProps) {
@@ -23,7 +23,8 @@ export default function Tables({ clienteId }: TablesProps) {
   useEffect(() => {
     if (!clienteId) return;
     setLoading(true);
-    fetch(`/api/ventas?clienteId=${clienteId}`, { credentials: "include" })
+    // Usa el endpoint que retorna los nombres de productos en los items
+    fetch(`/api/clientes/historial?clienteId=${clienteId}`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Venta[]) => setVentas(data))
       .finally(() => setLoading(false));
@@ -91,7 +92,7 @@ export default function Tables({ clienteId }: TablesProps) {
               <tbody>
                 {detalleVenta.map((detalle, idx) => (
                   <tr key={idx}>
-                    <td>{detalle.producto}</td>
+                    <td>{detalle.nombre || detalle.producto}</td>
                     <td>S/ {detalle.precio}</td>
                     <td>{detalle.cantidad}</td>
                   </tr>
