@@ -2,19 +2,21 @@ import React from "react";
 import Header from "../header/header";
 import Etiquetas from "./etiquetas/etiquetas";
 
-interface InventarioContentProps {
+interface InventarioProps {
   adminName: string;
   selectedOption: string;
   projectImage: string;
   handleLogout: () => void;
+  proyectoId: string | number; // Asegúrate de pasar este prop desde el panel principal
 }
 
-export default function InventarioContent({
+export default function Inventario({
   adminName,
   selectedOption,
   projectImage,
   handleLogout,
-}: InventarioContentProps) {
+  proyectoId, // <-- Añade este prop
+}: InventarioProps) {
   return (
     <div className="main-content">
       <Header
@@ -23,7 +25,7 @@ export default function InventarioContent({
         projectImage={projectImage}
         handleLogout={handleLogout}
       />
-      <Etiquetas />
+      <Etiquetas proyectoId={proyectoId} />
     </div>
   );
 }

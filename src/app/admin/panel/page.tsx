@@ -17,7 +17,7 @@ export default function AdminPanelPage() {
   const [adminName, setAdminName] = useState('');
   const [projectName, setProjectName] = useState('');
   const [projectImage, setProjectImage] = useState('');
-  //const [setProjectImageTipo, setProjectImageTipo] = useState('');
+  const [proyectoId, setProyectoId] = useState<string | number>(""); // <--- Añadido
   const [selectedOption, setSelectedOption] = useState("Ventas");
 
   useEffect(() => {
@@ -52,7 +52,7 @@ export default function AdminPanelPage() {
         const projectData = await resProject.json();
         setProjectName(projectData.nombre);
         setProjectImage(projectData.imagen_url);
-        //setProjectImageTipo(projectData.imagen_tipo_mime);
+        setProyectoId(projectData.proyecto_id); // <--- Añadido
 
         setLoading(false);
       } catch (error) {
@@ -113,7 +113,6 @@ export default function AdminPanelPage() {
         adminName={adminName}
         projectImage={projectImage}
         handleLogout={handleLogout}
-
         />
       )}
       {selectedOption === "Gráficos" && (
@@ -130,6 +129,7 @@ export default function AdminPanelPage() {
           adminName={adminName}
           projectImage={projectImage}
           handleLogout={handleLogout}
+          proyectoId={proyectoId} // <--- Añadido
         />
       )}
       {selectedOption === "Productos" && (
