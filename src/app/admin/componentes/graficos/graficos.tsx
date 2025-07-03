@@ -1,9 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../header/header";
 import Barras from "./barras/barras";
 import Tendencias from "./tendencias/tendencias";
 import Circulares from "./circulares/circulares";
-import "./circulares/circulares.css";
 
 interface GraficosContentProps {
   adminName: string;
@@ -12,12 +11,52 @@ interface GraficosContentProps {
   handleLogout: () => void;
 }
 
+interface Venta {
+  tipoPago?: string;
+  totalVenta: number;
+}
+
+interface ProductoMasVendido {
+  name: string;
+  cantidadVendida: number;
+}
+
 export default function GraficosContent({
   adminName,
   selectedOption,
   projectImage,
   handleLogout,
 }: GraficosContentProps) {
+  const [ganancias, setGanancias] = useState<{ efectivo: number; transferencia: number }>({
+    efectivo: 0,
+    transferencia: 0,
+  });
+  const [masVendidos, setMasVendidos] = useState<ProductoMasVendido[]>([]);
+
+  useEffect(() => {
+    // Cargar ganancias por método de pago
+    fetch("/api/ventas", { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((ventas: Venta[]) => {
+        let efectivo = 0,
+          transferencia = 0;
+        ventas.forEach((v) => {
+          if (v.tipoPago && v.tipoPago.toLowerCase() === "efectivo") {
+            efectivo += v.totalVenta;
+          } else {
+            // Cualquier otro método de pago (incluye mercado pago, transferencia, etc.)
+            transferencia += v.totalVenta;
+          }
+        });
+        setGanancias({ efectivo, transferencia });
+      });
+
+    // Cargar productos más vendidos
+    fetch("/api/productos/masvendidos", { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: ProductoMasVendido[]) => setMasVendidos(data));
+  }, []);
+
   return (
     <div className="main-content">
       <Header
@@ -29,13 +68,12 @@ export default function GraficosContent({
       <div className="graficos-layout">
         {/* Contenedor para las tablas */}
         <div className="tablas-container">
-          <Barras />
-          <Tendencias />
+          <Barras ganancias={ganancias} />
+          <Tendencias masVendidos={masVendidos} />
         </div>
-
         {/* Contenedor para los gráficos circulares */}
         <div className="circulares-container">
-          <Circulares />
+          <Circulares ganancias={ganancias} masVendidos={masVendidos} />
         </div>
       </div>
     </div>

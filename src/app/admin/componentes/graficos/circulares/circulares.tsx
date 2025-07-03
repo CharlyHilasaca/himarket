@@ -5,22 +5,28 @@ import "./circulares.css";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-export default function Circulares() {
+export default function Circulares({
+  ganancias,
+  masVendidos
+}: {
+  ganancias: { efectivo: number; transferencia: number };
+  masVendidos: { name: string; cantidadVendida: number }[];
+}) {
   const dataGanancias = {
     labels: ["Efectivo", "Transferencia"],
     datasets: [
       {
-        data: [60, 40],
+        data: [ganancias.efectivo, ganancias.transferencia],
         backgroundColor: ["#2D8F2F", "#256D25"],
       },
     ],
   };
 
   const dataProductos = {
-    labels: ["Producto 1", "Producto 2", "Producto 3", "Producto 4"],
+    labels: masVendidos.map(p => p.name),
     datasets: [
       {
-        data: [30, 25, 25, 20],
+        data: masVendidos.map(p => p.cantidadVendida),
         backgroundColor: ["#2D8F2F", "#256D25", "#94FF92", "#A3D9A5"],
       },
     ],
@@ -33,7 +39,7 @@ export default function Circulares() {
         <Doughnut data={dataGanancias} />
       </div>
       <div className="grafico">
-        <h3>Distribución de Productos Más Vendidos</h3>
+        <h3>Productos Más Vendidos</h3>
         <Doughnut data={dataProductos} />
       </div>
     </div>

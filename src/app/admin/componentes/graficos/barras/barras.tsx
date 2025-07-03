@@ -5,19 +5,14 @@ import "./barras.css";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
-export default function Barras() {
+export default function Barras({ ganancias }: { ganancias: { efectivo: number; transferencia: number } }) {
   const data = {
-    labels: ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"],
+    labels: ["Efectivo", "Transferencia"],
     datasets: [
       {
-        label: "Efectivo",
-        data: [500, 700, 800, 600, 900, 1000, 1200],
-        backgroundColor: "#2D8F2F",
-      },
-      {
-        label: "Transferencia",
-        data: [300, 400, 500, 300, 600, 700, 800],
-        backgroundColor: "#256D25",
+        label: "Ganancias por método de pago",
+        data: [ganancias.efectivo, ganancias.transferencia],
+        backgroundColor: ["#2D8F2F", "#256D25"],
       },
     ],
   };
@@ -30,7 +25,7 @@ export default function Barras() {
       },
       title: {
         display: true,
-        text: "Ganancias de la Semana",
+        text: "Ganancias por Método de Pago",
       },
     },
   };
