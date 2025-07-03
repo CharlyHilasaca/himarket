@@ -14,6 +14,8 @@ interface GraficosContentProps {
 interface Venta {
   tipoPago?: string;
   totalVenta: number;
+  estado?: string;
+  origen?: string;
 }
 
 interface ProductoMasVendido {
@@ -41,10 +43,13 @@ export default function GraficosContent({
         let efectivo = 0,
           transferencia = 0;
         ventas.forEach((v) => {
+          // Solo sumar ventas con estado "pagado", "para entrega" o "entregado"
+          if (!["pagado", "para entrega", "entregado"].includes((v.estado || "").toLowerCase())) return;
           if (v.tipoPago && v.tipoPago.toLowerCase() === "efectivo") {
             efectivo += v.totalVenta;
           } else {
             // Cualquier otro método de pago (incluye mercado pago, transferencia, etc.)
+            // Si es web y estado para entrega/entregado, también suma como transferencia
             transferencia += v.totalVenta;
           }
         });
