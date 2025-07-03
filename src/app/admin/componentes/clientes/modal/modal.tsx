@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./modal.css";
 
 interface ModalProps {
   isOpen: boolean;
@@ -27,11 +26,9 @@ export default function Modal({ isOpen, onClose, onSelectCliente }: ModalProps) 
     setError(null);
     setLoading(true);
     try {
-      // Puedes ajustar el endpoint según tu backend
       const res = await fetch(`/api/clientespg`);
       if (!res.ok) throw new Error("Error al buscar clientes");
       const data: Cliente[] = await res.json();
-      // Filtra en frontend por dni, nombres, apellidos o email
       const filtered = data.filter((cliente) =>
         (cliente.dni && cliente.dni.toLowerCase().includes(value.toLowerCase())) ||
         (cliente.nombres && cliente.nombres.toLowerCase().includes(value.toLowerCase())) ||
@@ -62,25 +59,31 @@ export default function Modal({ isOpen, onClose, onSelectCliente }: ModalProps) 
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="fixed inset-0 bg-black/50 flex justify-center items-center z-50"
+      onClick={onClose}
+    >
       <div
-        className="modal-content"
+        className="relative bg-white p-8 rounded-lg w-[90%] max-w-[400px] max-h-[480px] text-center shadow-lg overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <button onClick={onClose} className="close-modal-button">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 bg-green-800 text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-green-900"
+        >
           X
         </button>
-        <h3 className="title-modal">Buscar Cliente</h3>
+        <h3 className="text-2xl text-green-800 mb-4 font-bold">Buscar Cliente</h3>
         <input
           type="text"
           placeholder="Buscar por DNI, nombres, apellidos o email"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="search-input"
+          className="w-full p-2 mb-4 border border-gray-300 text-gray-700 rounded focus:outline-none focus:ring-2 focus:ring-green-400"
         />
         {loading && <div className="text-gray-500 text-sm my-2">Buscando...</div>}
         {error && <div className="text-red-500 text-sm my-2">{error}</div>}
-        <ul className="clientes-list">
+        <ul className="list-none p-0 m-0 text-green-800 max-h-[300px] overflow-y-auto">
           {clientes.map((cliente) => (
             <li
               key={cliente.id}
@@ -88,7 +91,7 @@ export default function Modal({ isOpen, onClose, onSelectCliente }: ModalProps) 
                 onSelectCliente(cliente.id);
                 onClose();
               }}
-              className="cliente-item"
+              className="p-2 border border-gray-300 mb-2 rounded cursor-pointer bg-white hover:bg-green-800 hover:text-white transition"
             >
               <div>
                 <span className="font-bold">{cliente.nombres} {cliente.apellidos}</span>

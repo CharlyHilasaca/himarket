@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import Header from "../header/header";
 import Modal from "./modal/modal";
 import Tables from "./tables/tables";
-import "./clientes.css";
 
 interface ClientesContentProps {
   adminName: string;
@@ -31,7 +30,10 @@ export default function ClientesContent({
         projectImage={projectImage}
         handleLogout={handleLogout}
       />
-      <button onClick={handleOpenModal} className="open-modal-button">
+      <button
+        onClick={handleOpenModal}
+        className="bg-green-800 text-white px-4 py-2 rounded mb-4 hover:bg-green-900 transition font-semibold"
+      >
         Buscar Cliente
       </button>
       <Modal

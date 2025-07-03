@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./tables.css";
 
 interface TablesProps {
   clienteId: number;
@@ -23,7 +22,6 @@ export default function Tables({ clienteId }: TablesProps) {
   useEffect(() => {
     if (!clienteId) return;
     setLoading(true);
-    // Usa el endpoint que retorna los nombres de productos en los items
     fetch(`/api/clientes/historial?clienteId=${clienteId}`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Venta[]) => setVentas(data))
@@ -35,21 +33,21 @@ export default function Tables({ clienteId }: TablesProps) {
     : [];
 
   return (
-    <div className="tables-container">
+    <div className="flex gap-8 flex-wrap">
       {/* Tabla de historial de ventas */}
-      <div className="table historial">
-        <h3>Historial de Ventas</h3>
-        <div className="table-scroll">
+      <div className="flex-1 min-w-[320px] max-w-[500px] bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-bold mb-2 text-green-800">Historial de Ventas</h3>
+        <div className="max-h-[320px] overflow-y-auto rounded-lg border border-gray-200">
           {loading ? (
             <div className="text-gray-500 text-sm my-2">Cargando...</div>
           ) : ventas.length > 0 ? (
-            <table>
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th>Fecha</th>
-                  <th>Total</th>
-                  <th>Método</th>
-                  <th>Estado</th>
+                  <th className="bg-green-700 text-white p-2">Fecha</th>
+                  <th className="bg-green-700 text-white p-2">Total</th>
+                  <th className="bg-green-700 text-white p-2">Método</th>
+                  <th className="bg-green-700 text-white p-2">Estado</th>
                 </tr>
               </thead>
               <tbody>
@@ -57,50 +55,47 @@ export default function Tables({ clienteId }: TablesProps) {
                   <tr
                     key={venta._id}
                     onClick={() => setSelectedVenta(venta._id)}
-                    className={
-                      (selectedVenta === venta._id ? "selected " : "") +
-                      "clickable-row"
-                    }
+                    className={`cursor-pointer ${selectedVenta === venta._id ? "bg-green-100 font-bold" : "hover:bg-green-50"}`}
                   >
-                    <td>{new Date(venta.createdAt).toLocaleDateString()}</td>
-                    <td>S/ {venta.totalVenta.toFixed(2)}</td>
-                    <td>{venta.tipoPago || "-"}</td>
-                    <td>{venta.estado || "-"}</td>
+                    <td className="border p-2">{new Date(venta.createdAt).toLocaleDateString()}</td>
+                    <td className="border p-2">S/ {venta.totalVenta.toFixed(2)}</td>
+                    <td className="border p-2">{venta.tipoPago || "-"}</td>
+                    <td className="border p-2">{venta.estado || "-"}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <p>No hay historial de ventas para este cliente.</p>
+            <p className="p-4 text-gray-500">No hay historial de ventas para este cliente.</p>
           )}
         </div>
       </div>
 
       {/* Tabla de detalles de la venta */}
-      <div className="table detalles">
-        <h3>Detalles de la Venta</h3>
-        <div className="table-scroll">
+      <div className="flex-1 min-w-[320px] max-w-[500px] bg-white p-4 rounded-lg shadow">
+        <h3 className="text-lg font-bold mb-2 text-green-800">Detalles de la Venta</h3>
+        <div className="max-h-[320px] overflow-y-auto rounded-lg border border-gray-200">
           {detalleVenta.length > 0 ? (
-            <table>
+            <table className="w-full border-collapse">
               <thead>
                 <tr>
-                  <th>Producto</th>
-                  <th>Precio</th>
-                  <th>Cantidad</th>
+                  <th className="bg-green-700 text-white p-2">Producto</th>
+                  <th className="bg-green-700 text-white p-2">Precio</th>
+                  <th className="bg-green-700 text-white p-2">Cantidad</th>
                 </tr>
               </thead>
               <tbody>
                 {detalleVenta.map((detalle, idx) => (
                   <tr key={idx}>
-                    <td>{detalle.nombre || detalle.producto}</td>
-                    <td>S/ {detalle.precio}</td>
-                    <td>{detalle.cantidad}</td>
+                    <td className="border p-2">{detalle.nombre || detalle.producto}</td>
+                    <td className="border p-2">S/ {detalle.precio}</td>
+                    <td className="border p-2">{detalle.cantidad}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
           ) : (
-            <p>Seleccione una venta para ver los detalles.</p>
+            <p className="p-4 text-gray-500">Seleccione una venta para ver los detalles.</p>
           )}
         </div>
       </div>
