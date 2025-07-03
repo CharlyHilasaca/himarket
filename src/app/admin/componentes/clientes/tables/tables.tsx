@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./tables.css";
 
 interface TablesProps {
@@ -6,84 +6,62 @@ interface TablesProps {
 }
 
 interface Venta {
-  id: number;
-  fecha: string;
-  total: string;
-  metodo: string;
+  _id: string;
+  createdAt: string;
+  nfac: string;
+  totalVenta: number;
+  tipoPago?: string;
+  estado?: string;
+  items: { producto: string; precio: number; cantidad: number }[];
 }
-
-interface Detalle {
-  producto: string;
-  precio: string;
-}
-
-interface ClienteData {
-  ventas: Venta[];
-  detalles: {
-    [ventaId: number]: Detalle[];
-  };
-}
-
-const data: { [clienteId: number]: ClienteData } = {
-  1: {
-    ventas: [
-      { id: 1, fecha: "2024-06-01", total: "$150", metodo: "Efectivo" },
-      { id: 2, fecha: "2024-06-02", total: "$100", metodo: "Tarjeta" },
-    ],
-    detalles: {
-      1: [
-        { producto: "Producto-01", precio: "$100" },
-        { producto: "Producto-02", precio: "$50" },
-      ],
-      2: [{ producto: "Producto-03", precio: "$100" }],
-    },
-  },
-  2: {
-    ventas: [
-      { id: 3, fecha: "2024-06-03", total: "$200", metodo: "Transferencia" },
-    ],
-    detalles: {
-      3: [
-        { producto: "Producto-04", precio: "$200" },
-      ],
-    },
-  },
-  3: {
-    ventas: [],
-    detalles: {},
-  },
-};
 
 export default function Tables({ clienteId }: TablesProps) {
-  const [selectedVenta, setSelectedVenta] = useState<number | null>(null);
+  const [ventas, setVentas] = useState<Venta[]>([]);
+  const [selectedVenta, setSelectedVenta] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const historialVentas = data[clienteId]?.ventas || [];
-  const detalleVenta = selectedVenta ? data[clienteId]?.detalles[selectedVenta] || [] : [];
+  useEffect(() => {
+    if (!clienteId) return;
+    setLoading(true);
+    // Llama a tu endpoint de historial de compras por clienteId
+    fetch(`/api/ventas?clienteId=${clienteId}`, { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((data: Venta[]) => setVentas(data))
+      .finally(() => setLoading(false));
+  }, [clienteId]);
+
+  const detalleVenta = selectedVenta
+    ? ventas.find((v) => v._id === selectedVenta)?.items || []
+    : [];
 
   return (
     <div className="tables-container">
       {/* Tabla de historial de ventas */}
       <div className="table historial">
         <h3>Historial de Ventas</h3>
-        {historialVentas.length > 0 ? (
+        {loading ? (
+          <div className="text-gray-500 text-sm my-2">Cargando...</div>
+        ) : ventas.length > 0 ? (
           <table>
             <thead>
               <tr>
                 <th>Fecha</th>
                 <th>Total</th>
                 <th>Método</th>
+                <th>Estado</th>
               </tr>
             </thead>
             <tbody>
-              {historialVentas.map((venta) => (
+              {ventas.map((venta) => (
                 <tr
-                  key={venta.id}
-                  onClick={() => setSelectedVenta(venta.id)}
-                  className={selectedVenta === venta.id ? "selected" : ""}
+                  key={venta._id}
+                  onClick={() => setSelectedVenta(venta._id)}
+                  className={selectedVenta === venta._id ? "selected" : ""}
                 >
-                  <td>{venta.fecha}</td>
-                  <td>{venta.total}</td>
-                  <td>{venta.metodo}</td>
+                  <td>{new Date(venta.createdAt).toLocaleDateString()}</td>
+                  <td>S/ {venta.totalVenta.toFixed(2)}</td>
+                  <td>{venta.tipoPago || "-"}</td>
+                  <td>{venta.estado || "-"}</td>
                 </tr>
               ))}
             </tbody>
@@ -102,13 +80,15 @@ export default function Tables({ clienteId }: TablesProps) {
               <tr>
                 <th>Producto</th>
                 <th>Precio</th>
+                <th>Cantidad</th>
               </tr>
             </thead>
             <tbody>
               {detalleVenta.map((detalle, idx) => (
                 <tr key={idx}>
                   <td>{detalle.producto}</td>
-                  <td>{detalle.precio}</td>
+                  <td>S/ {detalle.precio}</td>
+                  <td>{detalle.cantidad}</td>
                 </tr>
               ))}
             </tbody>
