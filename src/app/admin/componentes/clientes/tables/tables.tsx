@@ -22,7 +22,8 @@ export default function Tables({ clienteId }: TablesProps) {
   useEffect(() => {
     if (!clienteId) return;
     setLoading(true);
-    fetch(`/api/clientes/historial?clienteId=${clienteId}`, { credentials: "include" })
+    // Corrige la ruta: usa /api/clientes/historialcompras
+    fetch(`/api/clientes/historialcompras?clienteId=${clienteId}`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
       .then((data: Venta[]) => setVentas(data))
       .finally(() => setLoading(false));
