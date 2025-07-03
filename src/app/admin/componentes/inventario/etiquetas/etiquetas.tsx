@@ -97,9 +97,9 @@ export default function Etiquetas({ proyectoId }: EtiquetasProps) {
             width={200}
             height={200}
           />
-          <h3>{producto.name} {producto.marca}</h3>
+          <h3 className="text-black">{producto.name} {producto.marca}</h3>
           {producto.projectDetails && producto.projectDetails.length > 0 && (
-            <div>
+            <div className="text-black">
               <p>Precio compra: S/ {producto.projectDetails[0].purchasePrice}</p>
               <p>Precio venta: S/ {producto.projectDetails[0].salePrice}</p>
               <p>
@@ -124,7 +124,11 @@ export default function Etiquetas({ proyectoId }: EtiquetasProps) {
               ×
             </button>
             <h2 className="text-xl font-bold mb-4 text-green-800">Editar Producto</h2>
-            <div className="flex flex-col gap-3">
+            <div className="mb-4 text-black">
+              <span className="font-semibold">Producto:</span> {modalProducto.name}
+              {modalProducto.marca && <span className="ml-2">({modalProducto.marca})</span>}
+            </div>
+            <div className="flex flex-col gap-3 text-black">
               <label>
                 <span className="font-semibold">Precio de compra:</span>
                 <input
@@ -133,7 +137,7 @@ export default function Etiquetas({ proyectoId }: EtiquetasProps) {
                   min="0"
                   value={editValues.purchasePrice}
                   onChange={e => setEditValues(v => ({ ...v, purchasePrice: e.target.value }))}
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1"
+                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-black"
                 />
               </label>
               <label>
@@ -144,7 +148,7 @@ export default function Etiquetas({ proyectoId }: EtiquetasProps) {
                   min="0"
                   value={editValues.salePrice}
                   onChange={e => setEditValues(v => ({ ...v, salePrice: e.target.value }))}
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1"
+                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-black"
                 />
               </label>
               <label>
@@ -155,7 +159,7 @@ export default function Etiquetas({ proyectoId }: EtiquetasProps) {
                   min="0"
                   value={editValues.stock}
                   onChange={e => setEditValues(v => ({ ...v, stock: e.target.value }))}
-                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1"
+                  className="border border-gray-300 rounded px-2 py-1 w-full mt-1 text-black"
                 />
               </label>
             </div>
