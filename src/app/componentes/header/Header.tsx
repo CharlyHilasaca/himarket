@@ -24,6 +24,138 @@ const navOptions = [
   { label: "Contacto", value: "contacto" },
 ];
 
+interface ClienteData {
+  nombres?: string;
+  apellidos?: string;
+  dni?: string;
+}
+
+function ClienteInfoModal({
+  user,
+  onClose,
+}: {
+  user: { username?: string; email?: string } | null;
+  onClose: () => void;
+}) {
+  const [cliente, setCliente] = useState<ClienteData | null>(null);
+  const [dniInput, setDniInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [dniError, setDniError] = useState<string | null>(null);
+
+  // Cargar datos del cliente al abrir el modal
+  useEffect(() => {
+    if (!user?.email) return;
+    setLoading(true);
+    fetch("/api/clientes/customerData", { credentials: "include" })
+      .then(res => res.ok ? res.json() : null)
+      .then(data => setCliente(data?.customer || null))
+      .finally(() => setLoading(false));
+  }, [user]);
+
+  // Buscar y asociar DNI
+  const handleBuscarDni = async () => {
+    setDniError(null);
+    if (!dniInput || dniInput.length !== 8) {
+      setDniError("Ingrese un DNI válido de 8 dígitos.");
+      return;
+    }
+    setLoading(true);
+    try {
+      // Buscar en la tabla clientes
+      const res = await fetch(`/api/clientes/dni/${dniInput}`);
+      const data: ClienteData & { message?: string } = await res.json();
+      if (res.ok && data.nombres && data.apellidos) {
+        setCliente((prev) => ({
+          ...prev,
+          nombres: data.nombres,
+          apellidos: data.apellidos,
+          dni: dniInput,
+        }));
+        await fetch("/api/clientes/update", {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nombres: data.nombres,
+            apellidos: data.apellidos,
+            dni: dniInput,
+          }),
+        });
+      } else {
+        setDniError(data.message || "No se encontró el DNI.");
+      }
+    } catch {
+      setDniError("Error al buscar el DNI.");
+    }
+    setLoading(false);
+  };
+
+  if (!user) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/40 flex justify-end" onClick={onClose}>
+      <div
+        className="bg-white w-full max-w-md h-full shadow-lg p-6 flex flex-col relative"
+        onClick={e => e.stopPropagation()}
+      >
+        <button
+          className="absolute top-4 right-4 text-green-700 font-bold text-xl"
+          onClick={onClose}
+        >
+          ×
+        </button>
+        <h2 className="text-2xl font-bold text-green-800 mb-4">Datos del Cliente</h2>
+        {loading ? (
+          <div className="text-gray-500">Cargando...</div>
+        ) : (
+          <div className="flex flex-col gap-3 text-green-900">
+            <div>
+              <span className="font-semibold">Nombres:</span>{" "}
+              {cliente?.nombres || <span className="text-gray-400">No registrado</span>}
+            </div>
+            <div>
+              <span className="font-semibold">Apellidos:</span>{" "}
+              {cliente?.apellidos || <span className="text-gray-400">No registrado</span>}
+            </div>
+            <div>
+              <span className="font-semibold">Username:</span>{" "}
+              {user.username || <span className="text-gray-400">No registrado</span>}
+            </div>
+            <div>
+              <span className="font-semibold">Email:</span>{" "}
+              {user.email || <span className="text-gray-400">No registrado</span>}
+            </div>
+            <div>
+              <span className="font-semibold">DNI:</span>{" "}
+              {cliente?.dni ? (
+                <span>{cliente.dni}</span>
+              ) : (
+                <div className="flex flex-col gap-2 mt-2">
+                  <input
+                    type="text"
+                    value={dniInput}
+                    onChange={e => setDniInput(e.target.value.replace(/\D/g, "").slice(0, 8))}
+                    placeholder="Ingrese DNI"
+                    className="border border-gray-300 rounded px-2 py-1 w-full"
+                  />
+                  <button
+                    className="bg-green-700 text-white px-4 py-1 rounded hover:bg-green-800 transition font-semibold"
+                    onClick={handleBuscarDni}
+                    disabled={loading || dniInput.length !== 8}
+                  >
+                    Buscar y asociar DNI
+                  </button>
+                  {dniError && <span className="text-red-600 text-sm">{dniError}</span>}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Header({
   selected,
   onSelect,
@@ -49,6 +181,7 @@ export default function Header({
   const menuRef = useRef<HTMLDivElement>(null);
   const [cantidadUnicos, setCantidadUnicos] = useState<number>(0);
   const [navOpen, setNavOpen] = useState(false);
+  const [showClienteInfo, setShowClienteInfo] = useState(false);
 
   // Cargar cantidad de productos únicos en el carrito al montar y cuando cambia carritoCantidad
   useEffect(() => {
@@ -173,7 +306,13 @@ export default function Header({
           <div className="bg-white text-green-900 w-64 h-full shadow-lg flex flex-col p-6" onClick={e => e.stopPropagation()}>
             <div className="flex items-center gap-2 mb-6">
               <FaUser className="text-xl" />
-              <span className="font-semibold">{user.username || user.email?.split("@")[0]}</span>
+              <button
+                className="font-semibold underline hover:text-green-700"
+                onClick={() => setShowClienteInfo(true)}
+                title="Ver datos del cliente"
+              >
+                {user.username || user.email?.split("@")[0]}
+              </button>
             </div>
             <button
               className="flex items-center gap-2 mb-4 px-3 py-2 rounded bg-green-700 text-white font-semibold"
@@ -188,6 +327,13 @@ export default function Header({
               Cerrar sesión
             </button>
           </div>
+          {/* Modal lateral para datos del cliente */}
+          {showClienteInfo && (
+            <ClienteInfoModal
+              user={user}
+              onClose={() => setShowClienteInfo(false)}
+            />
+          )}
         </div>
       )}
     </header>
