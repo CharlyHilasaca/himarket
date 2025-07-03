@@ -84,13 +84,14 @@ export default function ProductDetailOverlay({
   return (
     <>
       <div className="w-full flex-1 flex justify-center items-start bg-transparent">
-        <div className="w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-xl shadow-lg mt-8 mb-8 relative min-h-[400px]">
+        <div className="w-full max-w-5xl flex flex-col gap-8 bg-white rounded-xl shadow-lg mt-8 mb-8 relative min-h-[400px]">
           <button onClick={onBack} className="absolute top-4 left-4 bg-green-700 text-white px-3 py-1 rounded z-10">Volver</button>
-          {/* Lado izquierdo: Producto principal */}
-          <div className="w-full md:w-1/2 p-8 flex flex-col items-center border-b md:border-b-0 md:border-r border-gray-200 min-h-[400px] max-h-[600px]">
-            {producto ? (
-              <>
-                <div className="w-[160px] h-[160px] relative flex items-center justify-center">
+          {/* Fila principal: imagen y datos */}
+          <div className="flex flex-col md:flex-row w-full gap-6 items-center md:items-stretch">
+            {/* Columna imagen */}
+            <div className="flex-shrink-0 flex items-center justify-center w-full md:w-1/2 md:max-w-[260px]">
+              {producto ? (
+                <div className="w-[160px] h-[160px] relative flex items-center justify-center mx-auto">
                   <Image
                     src={producto.image ? (producto.image.startsWith("/uploads/") ? producto.image : `/uploads/${producto.image}`) : "/placeholder.webp"}
                     alt={producto.name || "Producto"}
@@ -98,27 +99,34 @@ export default function ProductDetailOverlay({
                     style={{ objectFit: "contain" }}
                   />
                 </div>
-                <h2 className="mt-4 text-2xl font-bold text-green-900">{producto.name}</h2>
-                {producto.marca && <div className="text-green-700 mt-2">Marca: {producto.marca}</div>}
-                {producto.description && <div className="text-gray-700 mt-2">{producto.description}</div>}
-                {user && proyectoId && salePrice && (
-                  <>
-                    <div className="text-green-800 mt-4 text-xl font-bold">Precio: {salePrice}</div>
-                    <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition font-semibold">
-                      Agregar al carrito
-                    </button>
-                  </>
-                )}
-                {!user && (
-                  <div className="text-red-500 mt-4 text-sm">Inicia sesión para ver el precio</div>
-                )}
-              </>
-            ) : <div>Cargando...</div>}
+              ) : <div>Cargando...</div>}
+            </div>
+            {/* Columna datos */}
+            <div className="flex flex-col justify-center items-center md:items-end text-center md:text-right w-full md:w-1/2">
+              {producto ? (
+                <>
+                  <h2 className="text-2xl font-bold text-green-900">{producto.name}</h2>
+                  {producto.marca && <div className="text-green-700 mt-2">Marca: {producto.marca}</div>}
+                  {producto.description && <div className="text-gray-700 mt-2">{producto.description}</div>}
+                  {user && proyectoId && salePrice && (
+                    <>
+                      <div className="text-green-800 mt-4 text-xl font-bold">Precio: {salePrice}</div>
+                      <button className="mt-4 bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition font-semibold">
+                        Agregar al carrito
+                      </button>
+                    </>
+                  )}
+                  {!user && (
+                    <div className="text-red-500 mt-4 text-sm">Inicia sesión para ver el precio</div>
+                  )}
+                </>
+              ) : null}
+            </div>
           </div>
-          {/* Lado derecho: Productos relacionados */}
-          <div className="w-full md:w-1/2 p-8 flex flex-col gap-3 min-h-[400px] max-h-[600px] overflow-y-auto">
+          {/* Fila productos relacionados */}
+          <div className="w-full">
             <h3 className="text-lg font-bold text-green-800 mb-2">Productos de la misma categoría</h3>
-            <div className="flex flex-row flex-wrap gap-2 md:flex-col">
+            <div className="flex flex-row flex-wrap gap-2">
               {relacionados.filter(p => p._id !== selectedProductId).map(prod => (
                 <button
                   key={prod._id}
