@@ -1,7 +1,7 @@
 .tables-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
 }
 
 .table {
@@ -11,9 +11,22 @@
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
+.table-scroll {
+  max-height: 320px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+}
+
+.table.historial,
+.table.detalles {
+  flex: 1;
+  min-width: 320px;
+  max-width: 500px;
+}
+
 .table table {
   width: 100%;
-  border-collapse: collapse;
 }
 
 .table th,
@@ -31,4 +44,8 @@
 .table tbody tr.selected {
   background: #94ff92;
   font-weight: bold;
+}
+
+.clickable-row {
+  cursor: pointer;
 }
