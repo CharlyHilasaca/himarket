@@ -45,7 +45,9 @@ export default function Etiquetas() {
             <div>
               <p>Precio compra: S/ {producto.projectDetails[0].purchasePrice}</p>
               <p>Precio venta: S/ {producto.projectDetails[0].salePrice}</p>
-              <p>Stock: {producto.projectDetails[0].stock}</p>
+              <p>
+                Stock: {Number(producto.projectDetails[0].stock).toFixed(2)}
+              </p>
               {/* Puedes mostrar la unidad si lo deseas */}
             </div>
           )}
