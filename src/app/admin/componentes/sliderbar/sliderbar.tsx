@@ -21,7 +21,7 @@ export default function Sidebar({ selectedOption, setSelectedOption, projectName
   return (
     <aside className="sidebar">
       <div className="sidebar-admin">
-        <Image src="/admin.png" alt="Administrador" width={50} height={50} className="sidebar-admin-icon" />
+        <Image src="/admin.webp" alt="Administrador" width={50} height={50} className="sidebar-admin-icon" />
         <div className="sidebar-admin-text">
           <h2>{projectName}</h2>
           <p>Control preciso, decisiones inteligentes</p>
